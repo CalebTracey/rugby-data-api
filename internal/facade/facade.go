@@ -4,22 +4,22 @@ import (
 	"context"
 	"github.com/calebtracey/rugby-data-api/external/models/request"
 	"github.com/calebtracey/rugby-data-api/external/models/response"
-	psql2 "github.com/calebtracey/rugby-data-api/internal/facade/psql"
+	"github.com/calebtracey/rugby-data-api/internal/facade/sixnations"
 	"strings"
 )
 
 type APIFacadeI interface {
-	PSQLResults(ctx context.Context, req request.PSQLRequest) (resp response.PSQLResponse)
+	SixNationsResults(ctx context.Context, req request.CompetitionRequest) (resp response.CompetitionResponse)
 }
 
 type APIFacade struct {
-	PSQLDao psql2.FacadeI
+	SNDAO sixnations.FacadeI
 }
 
-func (s APIFacade) PSQLResults(ctx context.Context, req request.PSQLRequest) (resp response.PSQLResponse) {
+func (s APIFacade) SixNationsResults(ctx context.Context, req request.CompetitionRequest) (resp response.CompetitionResponse) {
 	//TODO add validation
-	if strings.EqualFold(req.RequestType, "Insert") {
-		resp = s.PSQLDao.AddNew(ctx, req)
+	if strings.EqualFold(req.Source, "DB") {
+		resp = s.SNDAO.SixNationsTeams(ctx)
 	}
 	return resp
 }

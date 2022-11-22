@@ -1,7 +1,9 @@
 package request
 
-type PSQLRequest struct {
-	RequestType string `json:"requestType,omitempty"`
-	Table       string `json:"table,omitempty"`
-	ID          string `json:"ID,omitempty"`
+type CompetitionRequest struct {
+	Source          string `json:"source,omitempty"`
+	CompetitionID   string `json:"competitionID,omitempty"`
+	CompetitionName string `json:"competitionName,omitempty"`
+	Table           string `json:"table,omitempty"`
+	ID              string `json:"ID,omitempty"`
 }

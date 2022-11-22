@@ -1,6 +1,22 @@
 package response
 
-type Response struct {
+import "github.com/calebtracey/rugby-data-api/external/models"
+
+type PSQLTeamsResponse struct {
+	Teams []models.TeamData `json:"teams"`
+}
+
+type CrawlerTeamsResponse struct {
+	Teams []models.TeamData `json:"teams"`
+}
+
+type TeamsData struct {
+	Data []models.TeamData `json:"teamData"`
+}
+
+type CompetitionResponse struct {
+	Teams   []models.TeamData `json:"teams,omitempty"`
+	Message Message           `json:"message,omitempty"`
 }
 
 type PSQLResponse struct {
@@ -16,6 +32,8 @@ type Message struct {
 	TimeTaken string     `json:"timeTaken,omitempty"`
 	Count     int        `json:"count,omitempty"`
 }
+
+type ErrorLogs []ErrorLog
 
 type ErrorLog struct {
 	Scope      string `json:"scope,omitempty"`

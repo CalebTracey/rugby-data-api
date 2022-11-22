@@ -13,8 +13,13 @@ DatabaseConfigs:
     Username: "postgres"
     Password: "password"
     Scheme: "postgres"
-ServiceConfigs:
-  - Name: "example"
-    URL: "https://example.net/v5"
-    ApiKeyEnvironmentVariable: "EXAMPLE_API_KEY"
-    PublicKeyEnvironmentVariable: "EXAMPLE_PUBLIC_KEY"
+CrawlerConfigs:
+  - Name: "Colly"
+    AppsJSONPath: "",
+    TimeoutSeconds: "3",
+    LoadingTimeoutSeconds: "3",
+    JSON: "true",
+    MaxDepth: "0",
+    visitedLinks: "0",
+    MaxVisitedLinks: "100",
+    MsDelayBetweenRequests: "10",
