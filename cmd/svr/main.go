@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/NYTimes/gziphandler"
-	"github.com/calebtracey/api-template/internal/routes"
 	config "github.com/calebtracey/config-yaml"
+	"github.com/calebtracey/rugby-data-api/internal/routes"
 	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
 )
@@ -26,9 +26,9 @@ func main() {
 	handler := routes.Handler{Service: facade}
 
 	router := handler.InitializeRoutes()
-	c := CorsHandler()
+	c := corsHandler()
 
-	log.Fatal(ListenAndServe(Port, gziphandler.GzipHandler(c.Handler(router))))
+	log.Fatal(listenAndServe(Port, gziphandler.GzipHandler(c.Handler(router))))
 }
 
 func panicQuit() {

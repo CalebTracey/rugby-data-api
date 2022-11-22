@@ -1,10 +1,10 @@
 package main
 
 import (
-	psql2 "github.com/calebtracey/api-template/internal/dao/psql"
-	"github.com/calebtracey/api-template/internal/facade"
-	"github.com/calebtracey/api-template/internal/facade/psql"
 	config "github.com/calebtracey/config-yaml"
+	psql2 "github.com/calebtracey/rugby-data-api/internal/dao/psql"
+	"github.com/calebtracey/rugby-data-api/internal/facade"
+	"github.com/calebtracey/rugby-data-api/internal/facade/psql"
 	log "github.com/sirupsen/logrus"
 )
 

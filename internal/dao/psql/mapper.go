@@ -3,8 +3,8 @@ package psql
 import (
 	"database/sql"
 	"fmt"
-	"github.com/calebtracey/api-template/external/models/request"
-	"github.com/calebtracey/api-template/external/models/response"
+	"github.com/calebtracey/rugby-data-api/external/models/request"
+	"github.com/calebtracey/rugby-data-api/external/models/response"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 )

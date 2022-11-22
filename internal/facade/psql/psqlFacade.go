@@ -2,9 +2,9 @@ package psql
 
 import (
 	"context"
-	"github.com/calebtracey/api-template/external/models/request"
-	"github.com/calebtracey/api-template/external/models/response"
-	"github.com/calebtracey/api-template/internal/dao/psql"
+	"github.com/calebtracey/rugby-data-api/external/models/request"
+	"github.com/calebtracey/rugby-data-api/external/models/response"
+	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
 )
 
 type FacadeI interface {

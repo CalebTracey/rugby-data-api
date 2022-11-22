@@ -2,9 +2,9 @@ package facade
 
 import (
 	"context"
-	"github.com/calebtracey/api-template/external/models/request"
-	"github.com/calebtracey/api-template/external/models/response"
-	psql2 "github.com/calebtracey/api-template/internal/facade/psql"
+	"github.com/calebtracey/rugby-data-api/external/models/request"
+	"github.com/calebtracey/rugby-data-api/external/models/response"
+	psql2 "github.com/calebtracey/rugby-data-api/internal/facade/psql"
 	"strings"
 )
 

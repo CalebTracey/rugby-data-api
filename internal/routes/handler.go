@@ -3,9 +3,9 @@ package routes
 import (
 	"bytes"
 	"encoding/json"
-	request2 "github.com/calebtracey/api-template/external/models/request"
-	"github.com/calebtracey/api-template/external/models/response"
-	"github.com/calebtracey/api-template/internal/facade"
+	request2 "github.com/calebtracey/rugby-data-api/external/models/request"
+	"github.com/calebtracey/rugby-data-api/external/models/response"
+	"github.com/calebtracey/rugby-data-api/internal/facade"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"io"

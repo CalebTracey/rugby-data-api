@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func ListenAndServe(addr string, handler http.Handler) error {
+func listenAndServe(addr string, handler http.Handler) error {
 	log.Infof("Listening on Port: %v", addr)
 
 	srv := &http.Server{
@@ -62,7 +62,7 @@ func ListenAndServe(addr string, handler http.Handler) error {
 	return serverError
 }
 
-func CorsHandler() *cors.Cors {
+func corsHandler() *cors.Cors {
 	return cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},
 		AllowCredentials: true,
