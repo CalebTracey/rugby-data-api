@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+//go:generate mockgen -destination=mockFacade.go -package=facade . APIFacadeI
 type APIFacadeI interface {
 	SixNationsResults(ctx context.Context, req request.CompetitionRequest) (resp response.CompetitionResponse)
 }

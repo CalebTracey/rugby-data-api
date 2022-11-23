@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+//go:generate mockgen -destination=mockDao.go -package=psql . DAOI
 type DAOI interface {
 	InsertOne(ctx context.Context, exec string) (res sql.Result, error *response.ErrorLog)
 	FindAll(ctx context.Context, query string) (rows *sql.Rows, err *response.ErrorLog)

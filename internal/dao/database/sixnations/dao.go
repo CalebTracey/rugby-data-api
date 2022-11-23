@@ -6,6 +6,7 @@ import (
 	"github.com/calebtracey/rugby-data-api/internal/dao/database/psql"
 )
 
+//go:generate mockgen -destination=mockDao.go -package=sixnations . SNDAOI
 type SNDAOI interface {
 	GetTeams(ctx context.Context, query string) (psqlTeamsResponse response.PSQLTeamsResponse, err *response.ErrorLog)
 }
