@@ -34,7 +34,6 @@ func (s DAO) FindAll(ctx context.Context, query string) (rows *sql.Rows, err *re
 		err = mapError(sqlErr, query)
 		return rows, err
 	}
-
 	return rows, nil
 }
 

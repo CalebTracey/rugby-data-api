@@ -3,8 +3,8 @@ package main
 import (
 	config "github.com/calebtracey/config-yaml"
 	sncrawl "github.com/calebtracey/rugby-data-api/internal/dao/crawl/sixnations"
+	"github.com/calebtracey/rugby-data-api/internal/dao/database/comp"
 	"github.com/calebtracey/rugby-data-api/internal/dao/database/psql"
-	"github.com/calebtracey/rugby-data-api/internal/dao/database/sixnations"
 	"github.com/calebtracey/rugby-data-api/internal/facade"
 	sn "github.com/calebtracey/rugby-data-api/internal/facade/sixnations"
 	log "github.com/sirupsen/logrus"
@@ -27,13 +27,13 @@ func initializeDAO(config config.Config) (facade.APIFacadeI, error) {
 			SNCrawler: sncrawl.DAO{
 				Collector: collyCrawlerConfig.Collector,
 			},
-			SNPSQL: sixnations.SNDAO{
+			SNPSQL: comp.DAO{
 				PSQLDAO: psql.DAO{
 					DB: psqlDbConfig.DB,
 				},
-				PSQLMapper: sixnations.Mapper{},
+				PSQLMapper: comp.Mapper{},
 			},
-			SNMapper: sixnations.Mapper{},
+			SNMapper: comp.Mapper{},
 		},
 	}, nil
 }

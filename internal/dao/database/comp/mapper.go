@@ -1,4 +1,4 @@
-package sixnations
+package comp
 
 import (
 	"database/sql"

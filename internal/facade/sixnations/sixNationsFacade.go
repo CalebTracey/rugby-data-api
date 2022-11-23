@@ -5,13 +5,13 @@ import (
 	"github.com/calebtracey/rugby-data-api/external/models/request"
 	"github.com/calebtracey/rugby-data-api/external/models/response"
 	sncrawl "github.com/calebtracey/rugby-data-api/internal/dao/crawl/sixnations"
-	"github.com/calebtracey/rugby-data-api/internal/dao/database/sixnations"
+	"github.com/calebtracey/rugby-data-api/internal/dao/database/comp"
 	log "github.com/sirupsen/logrus"
 )
 
 const LeagueIDSixNations = "180659"
 
-//go:generate mockgen -destination=mockFacade.go -package=sixnations . FacadeI
+//go:generate mockgen -destination=mockFacade.go -package=comp . FacadeI
 type FacadeI interface {
 	SixNationsTeams(ctx context.Context) (resp response.CompetitionResponse)
 	SixNationsCrawl(ctx context.Context, req request.CompetitionCrawlRequest) (resp response.CompetitionCrawlResponse)
@@ -19,8 +19,8 @@ type FacadeI interface {
 
 type Facade struct {
 	SNCrawler sncrawl.DAOI
-	SNPSQL    sixnations.SNDAOI
-	SNMapper  sixnations.MapperI
+	SNPSQL    comp.DAOI
+	SNMapper  comp.MapperI
 }
 
 func (s Facade) SixNationsTeams(ctx context.Context) (resp response.CompetitionResponse) {

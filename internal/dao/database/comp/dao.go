@@ -1,4 +1,4 @@
-package sixnations
+package comp
 
 import (
 	"context"
@@ -7,16 +7,16 @@ import (
 )
 
 //go:generate mockgen -destination=mockDao.go -package=sixnations . SNDAOI
-type SNDAOI interface {
+type DAOI interface {
 	GetTeams(ctx context.Context, query string) (psqlTeamsResponse response.CompetitionResponse, err *response.ErrorLog)
 }
 
-type SNDAO struct {
+type DAO struct {
 	PSQLDAO    psql.DAOI
 	PSQLMapper MapperI
 }
 
-func (s SNDAO) GetTeams(ctx context.Context, query string) (psqlTeamsResponse response.CompetitionResponse, err *response.ErrorLog) {
+func (s DAO) GetTeams(ctx context.Context, query string) (psqlTeamsResponse response.CompetitionResponse, err *response.ErrorLog) {
 	rows, err := s.PSQLDAO.FindAll(ctx, query)
 	if err != nil {
 		return psqlTeamsResponse, err
