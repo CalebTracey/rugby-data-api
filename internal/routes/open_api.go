@@ -7,9 +7,10 @@ import (
 	"net/http"
 )
 
-//go:generate go run ../../cmd/openapi-gen/main.go -path .
-//go:generate oapi-codegen -package openapi3 -generate types  -o ../../pkg/openapi3/types.gen.go openapi3.yaml
-//go:generate oapi-codegen -package openapi3 -generate client -o ../../pkg/openapi3/client.gen.go     openapi3.yaml
+//go:generate statik -src=/Users/calebtracey/Desktop/Code/rugby-data-api/swagger-ui
+//go:generate go run ../../cmd/openapi-gen/main.go -path ../../swagger-ui
+//go:generate oapi-codegen -package openapi3 -generate types  -o ../../pkg/openapi3/types.gen.go ../../swagger-ui/openapi3.yaml
+//go:generate oapi-codegen -package openapi3 -generate client -o ../../pkg/openapi3/client.gen.go ../../swagger-ui/openapi3.yaml
 
 // NewOpenAPI3 instantiates the OpenAPI specification for this service.
 func NewOpenAPI3() openapi3.T {
@@ -30,7 +31,7 @@ func NewOpenAPI3() openapi3.T {
 		Servers: openapi3.Servers{
 			&openapi3.Server{
 				Description: "Local development",
-				URL:         "http://localhost:7080",
+				URL:         "http://0.0.0.0:6080",
 			},
 		},
 	}
