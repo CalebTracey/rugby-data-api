@@ -2,36 +2,40 @@ package routes
 
 import (
 	"bytes"
-	"embed"
 	"encoding/json"
 	"github.com/calebtracey/rugby-data-api/external/models/request"
 	"github.com/calebtracey/rugby-data-api/external/models/response"
 	"github.com/calebtracey/rugby-data-api/internal/facade"
+	_ "github.com/calebtracey/rugby-data-api/internal/routes/statik"
 	"github.com/gorilla/mux"
+	"github.com/rakyll/statik/fs"
 	"github.com/sirupsen/logrus"
 	"io"
-	"io/fs"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 )
 
-//go:embed static
-var content embed.FS
-
 type Handler struct {
 	Service facade.APIFacadeI
 }
 
+// http://localhost:6080/swagger-ui/
 func (h *Handler) InitializeRoutes() *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 
 	r.Handle("/health", h.HealthCheck()).Methods(http.MethodGet)
 	r.Handle("/competition", h.CompetitionHandler()).Methods(http.MethodPost)
 
-	fsys, _ := fs.Sub(content, "static")
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.FS(fsys))))
+	statikFS, err := fs.New()
+	if err != nil {
+		panic(err)
+	}
+
+	staticServer := http.FileServer(statikFS)
+	sh := http.StripPrefix("/swagger-ui/", staticServer)
+	r.PathPrefix("/swagger-ui/").Handler(sh)
 
 	return r
 }

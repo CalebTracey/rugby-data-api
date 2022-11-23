@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	client, err := openapi3.NewClientWithResponses("http://localhost:6080")
+	client, err := openapi3.NewClientWithResponses("http://0.0.0.0:6080")
 	if err != nil {
 		log.Fatalf("Couldn't instantiate client: %s", err)
 	}
