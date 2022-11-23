@@ -13,6 +13,7 @@ var (
 
 const Port = "6080"
 
+//go:generate swagger spec --output=../../openapi.yaml
 func main() {
 	defer panicQuit()
 	//log.Fatal(godotenv.Load())
@@ -23,9 +24,9 @@ func main() {
 		panicQuit()
 	}
 	handler := routes.Handler{Service: facade}
-
 	router := handler.InitializeRoutes()
-	c := corsHandler()
+	routes.RegisterOpenAPI(router)
+	c := CorsHandler()
 
 	log.Fatal(listenAndServe(Port, gziphandler.GzipHandler(c.Handler(router))))
 }
