@@ -21,7 +21,7 @@ func (s SNDAO) GetTeams(ctx context.Context, query string) (psqlTeamsResponse re
 	if err != nil {
 		return psqlTeamsResponse, err
 	}
-	// TODO move the psql mapper into the dao where the rows are handled i
+	//TODO move the psql mapper into the dao where the rows are handled i
 	sixNationsData := s.PSQLMapper.MapPSQLRowsToCompetitionData(rows)
 	psqlTeamsResponse = s.PSQLMapper.MapCompetitionDataResponse(sixNationsData)
 

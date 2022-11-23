@@ -7,3 +7,8 @@ type CompetitionRequest struct {
 	Table           string `json:"table,omitempty"`
 	ID              string `json:"ID,omitempty"`
 }
+
+type CompetitionCrawlRequest struct {
+	CompetitionID string `json:"competitionID,omitempty"`
+	Date          string `json:"date,omitempty"`
+}

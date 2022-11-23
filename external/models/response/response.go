@@ -13,6 +13,12 @@ type CompetitionResponse struct {
 	Message Message             `json:"message,omitempty"`
 }
 
+type CompetitionCrawlResponse struct {
+	CompetitionID string  `json:"competitionID,omitempty"`
+	Date          string  `json:"date,omitempty"`
+	Message       Message `json:"message,omitempty"`
+}
+
 type PSQLResponse struct {
 	RowsAffected string  `json:"rowsAffected,omitempty"`
 	LastInsertID string  `json:"lastInsertID,omitempty"`
