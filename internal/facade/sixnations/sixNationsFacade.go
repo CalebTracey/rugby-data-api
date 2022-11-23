@@ -24,7 +24,7 @@ type Facade struct {
 func (s Facade) SixNationsTeams(ctx context.Context) (resp response.CompetitionResponse) {
 	teamsQuery := s.SNMapper.CreatePSQLCompetitionQuery(LeagueIDSixNations)
 
-	data, err := s.SNPSQL.GetTeams(ctx, teamsQuery)
+	resp, err := s.SNPSQL.GetTeams(ctx, teamsQuery)
 	if err != nil {
 		log.Error(err)
 		return response.CompetitionResponse{
@@ -35,6 +35,5 @@ func (s Facade) SixNationsTeams(ctx context.Context) (resp response.CompetitionR
 			},
 		}
 	}
-	resp.Teams = data.Teams
 	return resp
 }

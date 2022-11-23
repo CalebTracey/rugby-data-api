@@ -7,8 +7,10 @@ type TeamDataResponse struct {
 }
 
 type CompetitionResponse struct {
-	Teams   models.PSQLCompetitionDataList `json:"teams,omitempty"`
-	Message Message                        `json:"message,omitempty"`
+	ID      string              `json:"id,omitempty"`
+	Name    string              `json:"name,omitempty"`
+	Teams   models.TeamDataList `json:"teams,omitempty"`
+	Message Message             `json:"message,omitempty"`
 }
 
 type PSQLResponse struct {

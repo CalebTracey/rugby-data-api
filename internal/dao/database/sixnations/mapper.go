@@ -4,13 +4,16 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/calebtracey/rugby-data-api/external/models"
+	"github.com/calebtracey/rugby-data-api/external/models/response"
 	log "github.com/sirupsen/logrus"
+	"strconv"
 )
 
 //go:generate mockgen -destination=mockMapper.go -package=sixnations . MapperI
 type MapperI interface {
 	CreatePSQLCompetitionQuery(teamId string) string
 	MapPSQLRowsToCompetitionData(rows *sql.Rows) (sixNationsData models.PSQLCompetitionDataList)
+	MapCompetitionDataResponse(sixNationsData models.PSQLCompetitionDataList) (resp response.CompetitionResponse)
 }
 
 type Mapper struct{}
@@ -35,6 +38,18 @@ func (m Mapper) MapPSQLRowsToCompetitionData(rows *sql.Rows) (sixNationsData mod
 	}
 
 	return sixNationsData
+}
+
+func (m Mapper) MapCompetitionDataResponse(sixNationsData models.PSQLCompetitionDataList) (resp response.CompetitionResponse) {
+	resp.ID = strconv.Itoa(sixNationsData[0].CompID)
+	resp.Name = sixNationsData[0].CompName
+	for _, data := range sixNationsData {
+		resp.Teams = append(resp.Teams, models.TeamData{
+			ID:   strconv.Itoa(data.TeamID),
+			Name: data.TeamName,
+		})
+	}
+	return resp
 }
 
 const (

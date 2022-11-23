@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	models "github.com/calebtracey/rugby-data-api/external/models"
+	response "github.com/calebtracey/rugby-data-api/external/models/response"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -35,7 +36,7 @@ func (m *MockMapperI) EXPECT() *MockMapperIMockRecorder {
 	return m.recorder
 }
 
-// CreatePSQLTeamsQuery mocks base method.
+// CreatePSQLCompetitionQuery mocks base method.
 func (m *MockMapperI) CreatePSQLCompetitionQuery(arg0 string) string {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreatePSQLCompetitionQuery", arg0)
@@ -43,17 +44,31 @@ func (m *MockMapperI) CreatePSQLCompetitionQuery(arg0 string) string {
 	return ret0
 }
 
-// CreatePSQLTeamsQuery indicates an expected call of CreatePSQLTeamsQuery.
-func (mr *MockMapperIMockRecorder) CreatePSQLTeamsQuery(arg0 interface{}) *gomock.Call {
+// CreatePSQLCompetitionQuery indicates an expected call of CreatePSQLCompetitionQuery.
+func (mr *MockMapperIMockRecorder) CreatePSQLCompetitionQuery(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePSQLCompetitionQuery", reflect.TypeOf((*MockMapperI)(nil).CreatePSQLCompetitionQuery), arg0)
 }
 
+// MapCompetitionDataResponse mocks base method.
+func (m *MockMapperI) MapCompetitionDataResponse(arg0 models.PSQLCompetitionDataList) response.CompetitionResponse {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MapCompetitionDataResponse", arg0)
+	ret0, _ := ret[0].(response.CompetitionResponse)
+	return ret0
+}
+
+// MapCompetitionDataResponse indicates an expected call of MapCompetitionDataResponse.
+func (mr *MockMapperIMockRecorder) MapCompetitionDataResponse(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MapCompetitionDataResponse", reflect.TypeOf((*MockMapperI)(nil).MapCompetitionDataResponse), arg0)
+}
+
 // MapPSQLRowsToCompetitionData mocks base method.
-func (m *MockMapperI) MapPSQLRowsToCompetitionData(arg0 *sql.Rows) models.PSQLCompetitionData {
+func (m *MockMapperI) MapPSQLRowsToCompetitionData(arg0 *sql.Rows) models.PSQLCompetitionDataList {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "MapPSQLRowsToCompetitionData", arg0)
-	ret0, _ := ret[0].(models.PSQLCompetitionData)
+	ret0, _ := ret[0].(models.PSQLCompetitionDataList)
 	return ret0
 }
 
