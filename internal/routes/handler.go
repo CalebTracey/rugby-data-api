@@ -3,7 +3,7 @@ package routes
 import (
 	"bytes"
 	"encoding/json"
-	request2 "github.com/calebtracey/rugby-data-api/external/models/request"
+	"github.com/calebtracey/rugby-data-api/external/models/request"
 	"github.com/calebtracey/rugby-data-api/external/models/response"
 	"github.com/calebtracey/rugby-data-api/internal/facade"
 	"github.com/gorilla/mux"
@@ -25,37 +25,37 @@ func (h *Handler) InitializeRoutes() *mux.Router {
 	// Health check
 	r.Handle("/health", h.HealthCheck()).Methods(http.MethodGet)
 
-	r.Handle("/add", h.AddNewHandler()).Methods(http.MethodPost)
+	r.Handle("/competition", h.CompetitionHandler()).Methods(http.MethodPost)
 
 	return r
 }
 
-func (h *Handler) AddNewHandler() http.HandlerFunc {
+func (h *Handler) CompetitionHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		startTime := time.Now()
-		var psqlResponse response.PSQLResponse
-		var psqlRequest request2.PSQLRequest
+		var compResponse response.CompetitionResponse
+		var compRequest request.CompetitionRequest
 
 		defer func() {
-			status, _ := strconv.Atoi(psqlResponse.Message.Status)
+			status, _ := strconv.Atoi(compResponse.Message.Status)
 			hn, _ := os.Hostname()
-			psqlResponse.Message.HostName = hn
-			psqlResponse.Message.TimeTaken = time.Since(startTime).String()
-			_ = json.NewEncoder(writeHeader(w, status)).Encode(psqlResponse)
+			compResponse.Message.HostName = hn
+			compResponse.Message.TimeTaken = time.Since(startTime).String()
+			_ = json.NewEncoder(writeHeader(w, status)).Encode(compResponse)
 		}()
 		body, bodyErr := readBody(r.Body)
 
 		if bodyErr != nil {
-			psqlResponse.Message.ErrorLog = errorLogs([]error{bodyErr}, "Unable to read psqlRequest body", http.StatusBadRequest)
+			compResponse.Message.ErrorLog = errorLogs([]error{bodyErr}, "Unable to read psqlRequest body", http.StatusBadRequest)
 			return
 		}
-		err := json.Unmarshal(body, &psqlRequest)
+		err := json.Unmarshal(body, &compRequest)
 		if err != nil {
-			psqlResponse.Message.ErrorLog = errorLogs([]error{err}, "Unable to parse psqlRequest", http.StatusBadRequest)
+			compResponse.Message.ErrorLog = errorLogs([]error{err}, "Unable to parse psqlRequest", http.StatusBadRequest)
 			return
 		}
 
-		psqlResponse = h.Service.PSQLResults(r.Context(), psqlRequest)
+		compResponse = h.Service.SixNationsResults(r.Context(), compRequest)
 	}
 }
 

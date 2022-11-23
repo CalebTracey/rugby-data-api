@@ -4,19 +4,18 @@ import (
 	"github.com/NYTimes/gziphandler"
 	config "github.com/calebtracey/config-yaml"
 	"github.com/calebtracey/rugby-data-api/internal/routes"
-	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
 )
 
 var (
-	configPath = "config.yaml"
+	configPath = "local_config.yaml"
 )
 
 const Port = "6080"
 
 func main() {
 	defer panicQuit()
-	log.Fatal(godotenv.Load())
+	//log.Fatal(godotenv.Load())
 	appConfig := config.NewFromFile(configPath)
 	facade, err := initializeDAO(*appConfig)
 	if err != nil {
