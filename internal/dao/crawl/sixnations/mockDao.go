@@ -36,10 +36,10 @@ func (m *MockDAOI) EXPECT() *MockDAOIMockRecorder {
 }
 
 // GetTeamData mocks base method.
-func (m *MockDAOI) GetTeamData(arg0 context.Context, arg1 string) (response.CrawlerTeamsResponse, *response.ErrorLog) {
+func (m *MockDAOI) GetTeamData(arg0 context.Context, arg1 string) (response.TeamDataResponse, *response.ErrorLog) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTeamData", arg0, arg1)
-	ret0, _ := ret[0].(response.CrawlerTeamsResponse)
+	ret0, _ := ret[0].(response.TeamDataResponse)
 	ret1, _ := ret[1].(*response.ErrorLog)
 	return ret0, ret1
 }

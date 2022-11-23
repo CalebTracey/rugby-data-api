@@ -8,14 +8,14 @@ import (
 
 //go:generate mockgen -destination=mockDao.go -package=sixnations . DAOI
 type DAOI interface {
-	GetTeamData(ctx context.Context, team string) (resp response.CrawlerTeamsResponse, log *response.ErrorLog)
+	GetTeamData(ctx context.Context, team string) (resp response.TeamDataResponse, log *response.ErrorLog)
 }
 
 type DAO struct {
 	Collector *colly.Collector
 }
 
-func (s DAO) GetTeamData(ctx context.Context, team string) (resp response.CrawlerTeamsResponse, log *response.ErrorLog) {
+func (s DAO) GetTeamData(ctx context.Context, team string) (resp response.TeamDataResponse, log *response.ErrorLog) {
 
 	return resp, nil
 }

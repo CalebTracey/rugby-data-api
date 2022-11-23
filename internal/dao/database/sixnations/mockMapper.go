@@ -36,9 +36,9 @@ func (m *MockMapperI) EXPECT() *MockMapperIMockRecorder {
 }
 
 // CreatePSQLTeamsQuery mocks base method.
-func (m *MockMapperI) CreatePSQLTeamsQuery(arg0 string) string {
+func (m *MockMapperI) CreatePSQLCompetitionQuery(arg0 string) string {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreatePSQLTeamsQuery", arg0)
+	ret := m.ctrl.Call(m, "CreatePSQLCompetitionQuery", arg0)
 	ret0, _ := ret[0].(string)
 	return ret0
 }
@@ -46,19 +46,19 @@ func (m *MockMapperI) CreatePSQLTeamsQuery(arg0 string) string {
 // CreatePSQLTeamsQuery indicates an expected call of CreatePSQLTeamsQuery.
 func (mr *MockMapperIMockRecorder) CreatePSQLTeamsQuery(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePSQLTeamsQuery", reflect.TypeOf((*MockMapperI)(nil).CreatePSQLTeamsQuery), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePSQLCompetitionQuery", reflect.TypeOf((*MockMapperI)(nil).CreatePSQLCompetitionQuery), arg0)
 }
 
-// MapPSQLRowsToTeamData mocks base method.
-func (m *MockMapperI) MapPSQLRowsToTeamData(arg0 *sql.Rows) []models.TeamData {
+// MapPSQLRowsToCompetitionData mocks base method.
+func (m *MockMapperI) MapPSQLRowsToCompetitionData(arg0 *sql.Rows) models.PSQLCompetitionData {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MapPSQLRowsToTeamData", arg0)
-	ret0, _ := ret[0].([]models.TeamData)
+	ret := m.ctrl.Call(m, "MapPSQLRowsToCompetitionData", arg0)
+	ret0, _ := ret[0].(models.PSQLCompetitionData)
 	return ret0
 }
 
-// MapPSQLRowsToTeamData indicates an expected call of MapPSQLRowsToTeamData.
-func (mr *MockMapperIMockRecorder) MapPSQLRowsToTeamData(arg0 interface{}) *gomock.Call {
+// MapPSQLRowsToCompetitionData indicates an expected call of MapPSQLRowsToCompetitionData.
+func (mr *MockMapperIMockRecorder) MapPSQLRowsToCompetitionData(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MapPSQLRowsToTeamData", reflect.TypeOf((*MockMapperI)(nil).MapPSQLRowsToTeamData), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MapPSQLRowsToCompetitionData", reflect.TypeOf((*MockMapperI)(nil).MapPSQLRowsToCompetitionData), arg0)
 }
