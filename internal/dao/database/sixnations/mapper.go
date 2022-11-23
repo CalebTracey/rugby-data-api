@@ -4,36 +4,51 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/calebtracey/rugby-data-api/external/models"
-	"github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 )
 
 //go:generate mockgen -destination=mockMapper.go -package=sixnations . MapperI
 type MapperI interface {
-	CreatePSQLTeamsQuery(teamId string) string
-	MapPSQLRowsToTeamData(rows *sql.Rows) (sixNationsTeams []models.TeamData)
+	CreatePSQLCompetitionQuery(teamId string) string
+	MapPSQLRowsToCompetitionData(rows *sql.Rows) (sixNationsData models.PSQLCompetitionDataList)
 }
 
 type Mapper struct{}
 
-func (m Mapper) CreatePSQLTeamsQuery(teamId string) string {
-	return fmt.Sprintf(PSQLSelectByID, teamId)
+func (m Mapper) CreatePSQLCompetitionQuery(teamId string) string {
+	return fmt.Sprintf(PSQLCompetitionByID, teamId)
 }
 
-func (m Mapper) MapPSQLRowsToTeamData(rows *sql.Rows) (sixNationsTeams []models.TeamData) {
-	var team models.TeamData
+func (m Mapper) MapPSQLRowsToCompetitionData(rows *sql.Rows) (sixNationsData models.PSQLCompetitionDataList) {
+	var data models.PSQLCompetitionData
 	for rows.Next() {
 		err := rows.Scan(
-			&team.Name,
-			pq.Array(&team.Players),
+			&data.CompID,
+			&data.CompName,
+			&data.TeamID,
+			&data.TeamName,
 		)
 		if err != nil {
 			log.Panicln(err)
 		}
-		sixNationsTeams = append(sixNationsTeams, team)
+		sixNationsData = append(sixNationsData, data)
 	}
 
-	return sixNationsTeams
+	return sixNationsData
 }
 
-const PSQLSelectByID = `select id, name, players from public.sixnations.teams where id = '%s'`
+const (
+	PSQLCompetitionByID = `with comp_teams as (
+		select
+			c.comp_id,
+			c.name as comp_name,
+			t.name as team_name,
+			t.team_id
+		from
+			competitions c,
+			unnest(c.teams) t_id
+			join teams t on (t.team_id = t_id)
+		where
+			c.comp_id = '%s'
+	) select comp_id, comp_name, team_id, team_name from comp_teams;`
+)

@@ -36,10 +36,10 @@ func (m *MockSNDAOI) EXPECT() *MockSNDAOIMockRecorder {
 }
 
 // GetTeams mocks base method.
-func (m *MockSNDAOI) GetTeams(arg0 context.Context, arg1 string) (response.PSQLTeamsResponse, *response.ErrorLog) {
+func (m *MockSNDAOI) GetTeams(arg0 context.Context, arg1 string) (response.CompetitionResponse, *response.ErrorLog) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTeams", arg0, arg1)
-	ret0, _ := ret[0].(response.PSQLTeamsResponse)
+	ret0, _ := ret[0].(response.CompetitionResponse)
 	ret1, _ := ret[1].(*response.ErrorLog)
 	return ret0, ret1
 }

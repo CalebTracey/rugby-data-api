@@ -8,20 +8,22 @@ import (
 
 //go:generate mockgen -destination=mockDao.go -package=sixnations . SNDAOI
 type SNDAOI interface {
-	GetTeams(ctx context.Context, query string) (psqlTeamsResponse response.PSQLTeamsResponse, err *response.ErrorLog)
+	GetTeams(ctx context.Context, query string) (psqlTeamsResponse response.CompetitionResponse, err *response.ErrorLog)
 }
 
 type SNDAO struct {
 	PSQLDAO    psql.DAOI
-	PSQLMapper Mapper
+	PSQLMapper MapperI
 }
 
-func (s SNDAO) GetTeams(ctx context.Context, query string) (psqlTeamsResponse response.PSQLTeamsResponse, err *response.ErrorLog) {
+func (s SNDAO) GetTeams(ctx context.Context, query string) (psqlTeamsResponse response.CompetitionResponse, err *response.ErrorLog) {
 	rows, err := s.PSQLDAO.FindAll(ctx, query)
 	if err != nil {
 		return psqlTeamsResponse, err
 	}
-	psqlTeamsResponse.Teams = s.PSQLMapper.MapPSQLRowsToTeamData(rows)
+	// TODO make a nicer teams response and map it better
+	sixNationsData := s.PSQLMapper.MapPSQLRowsToCompetitionData(rows)
+	psqlTeamsResponse.Teams = sixNationsData
 
 	return psqlTeamsResponse, err
 }

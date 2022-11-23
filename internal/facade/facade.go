@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const PSQLDatabaseSource = "psql_db"
+
 //go:generate mockgen -destination=mockFacade.go -package=facade . APIFacadeI
 type APIFacadeI interface {
 	SixNationsResults(ctx context.Context, req request.CompetitionRequest) (resp response.CompetitionResponse)
@@ -19,7 +21,7 @@ type APIFacade struct {
 
 func (s APIFacade) SixNationsResults(ctx context.Context, req request.CompetitionRequest) (resp response.CompetitionResponse) {
 	//TODO add validation
-	if strings.EqualFold(req.Source, "DB") {
+	if strings.EqualFold(req.Source, PSQLDatabaseSource) {
 		resp = s.SNDAO.SixNationsTeams(ctx)
 	}
 	return resp

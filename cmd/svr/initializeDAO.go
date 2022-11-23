@@ -31,6 +31,7 @@ func initializeDAO(config config.Config) (facade.APIFacadeI, error) {
 				PSQLDAO: psql.DAO{
 					DB: psqlDbConfig.DB,
 				},
+				PSQLMapper: sixnations.Mapper{},
 			},
 			SNMapper: sixnations.Mapper{},
 		},
