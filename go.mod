@@ -4,15 +4,13 @@ go 1.19
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
-	github.com/calebtracey/config-yaml v1.0.2
+	github.com/calebtracey/config-yaml v1.0.3
 	github.com/gocolly/colly v1.2.0
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.7
 	github.com/rs/cors v1.8.2
 	github.com/sirupsen/logrus v1.9.0
 )
-
-replace github.com/calebtracey/config-yaml => /Users/calebtracey/Desktop/Code/config-yaml
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect
