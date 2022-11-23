@@ -10,6 +10,7 @@ import (
 
 const LeagueIDSixNations = "180659"
 
+//go:generate mockgen -destination=mockFacade.go -package=sixnations . FacadeI
 type FacadeI interface {
 	SixNationsTeams(ctx context.Context) (resp response.CompetitionResponse)
 }

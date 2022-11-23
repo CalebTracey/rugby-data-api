@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+//go:generate mockgen -destination=mockMapper.go -package=sixnations . MapperI
 type MapperI interface {
 	CreatePSQLTeamsQuery(teamId string) string
 	MapPSQLRowsToTeamData(rows *sql.Rows) (sixNationsTeams []models.TeamData)

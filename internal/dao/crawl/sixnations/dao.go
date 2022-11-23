@@ -6,6 +6,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
+//go:generate mockgen -destination=mockDao.go -package=sixnations . DAOI
 type DAOI interface {
 	GetTeamData(ctx context.Context, team string) (resp response.CrawlerTeamsResponse, log *response.ErrorLog)
 }
