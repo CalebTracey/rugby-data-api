@@ -2,10 +2,16 @@ package response
 
 import "github.com/calebtracey/rugby-data-api/external/models"
 
+// TeamDataResponse struct
+//
+//swagger:model
 type TeamDataResponse struct {
 	Teams models.PSQLTeamDataList `json:"teams"`
 }
 
+// CompetitionResponse struct
+//
+//swagger:model
 type CompetitionResponse struct {
 	ID      string              `json:"id,omitempty"`
 	Name    string              `json:"name,omitempty"`
@@ -13,28 +19,33 @@ type CompetitionResponse struct {
 	Message Message             `json:"message,omitempty"`
 }
 
+// CompetitionCrawlResponse struct
+//
+//swagger:model
 type CompetitionCrawlResponse struct {
-	CompetitionID string  `json:"competitionID,omitempty"`
-	Date          string  `json:"date,omitempty"`
+	CompetitionID string  `json:"id,omitempty"`
 	Message       Message `json:"message,omitempty"`
 }
 
-type PSQLResponse struct {
-	RowsAffected string  `json:"rowsAffected,omitempty"`
-	LastInsertID string  `json:"lastInsertID,omitempty"`
-	Message      Message `json:"message,omitempty"`
-}
-
+// Message struct
+//
+//swagger:model
 type Message struct {
-	ErrorLog  []ErrorLog `json:"errorLog,omitempty"`
-	HostName  string     `json:"hostName,omitempty"`
-	Status    string     `json:"status,omitempty"`
-	TimeTaken string     `json:"timeTaken,omitempty"`
-	Count     int        `json:"count,omitempty"`
+	ErrorLog  ErrorLogs `json:"errorLog,omitempty"`
+	HostName  string    `json:"hostName,omitempty"`
+	Status    string    `json:"status,omitempty"`
+	TimeTaken string    `json:"timeTaken,omitempty"`
+	Count     int       `json:"count,omitempty"`
 }
 
+// ErrorLogs struct
+//
+//swagger:model
 type ErrorLogs []ErrorLog
 
+// ErrorLog struct
+//
+//swagger:model
 type ErrorLog struct {
 	Scope      string `json:"scope,omitempty"`
 	StatusCode string `json:"status,omitempty"`

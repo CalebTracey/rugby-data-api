@@ -2,6 +2,7 @@ package routes
 
 import (
 	"bytes"
+	"embed"
 	"encoding/json"
 	"github.com/calebtracey/rugby-data-api/external/models/request"
 	"github.com/calebtracey/rugby-data-api/external/models/response"
@@ -9,11 +10,15 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"io"
+	"io/fs"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 )
+
+//go:embed static
+var content embed.FS
 
 type Handler struct {
 	Service facade.APIFacadeI
@@ -22,10 +27,11 @@ type Handler struct {
 func (h *Handler) InitializeRoutes() *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 
-	// Health check
 	r.Handle("/health", h.HealthCheck()).Methods(http.MethodGet)
-
 	r.Handle("/competition", h.CompetitionHandler()).Methods(http.MethodPost)
+
+	fsys, _ := fs.Sub(content, "static")
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.FS(fsys))))
 
 	return r
 }
@@ -74,6 +80,23 @@ func writeHeader(w http.ResponseWriter, code int) http.ResponseWriter {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(code)
 	return w
+}
+
+func renderResponse(w http.ResponseWriter, res interface{}, status int) {
+	w.Header().Set("Content-Type", "application/json")
+
+	content, err := json.Marshal(res)
+	if err != nil {
+		logrus.Error(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(status)
+
+	if _, err = w.Write(content); err != nil {
+		logrus.Error(err)
+	}
 }
 
 func readBody(body io.ReadCloser) ([]byte, error) {
