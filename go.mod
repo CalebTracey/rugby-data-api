@@ -16,6 +16,7 @@ require (
 	github.com/sirupsen/logrus v1.9.0
 	gopkg.in/yaml.v3 v3.0.1
 )
+replace github.com/calebtracey/rugby-models => /Users/calebtracey/Desktop/Code/rugby-models
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect
@@ -23,6 +24,7 @@ require (
 	github.com/antchfx/htmlquery v1.2.5 // indirect
 	github.com/antchfx/xmlquery v1.3.12 // indirect
 	github.com/antchfx/xpath v1.2.1 // indirect
+	github.com/calebtracey/rugby-models v0.0.2 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect

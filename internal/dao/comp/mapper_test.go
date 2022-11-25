@@ -44,8 +44,8 @@ func TestMapper_CreatePSQLCompetitionQuery(t *testing.T) {
 //	for _, tt := range tests {
 //		t.Run(tt.name, func(t *testing.T) {
 //			m := Mapper{}
-//			if gotSixNationsData := m.MapPSQLRowsToCompetitionData(tt.rows); !reflect.DeepEqual(gotSixNationsData, tt.wantSixNationsData) {
-//				t.Errorf("MapPSQLRowsToCompetitionData() = %v, want %v", gotSixNationsData, tt.wantSixNationsData)
+//			if gotSixNationsData := m.MapPSQLRowsToLeaderboardData(tt.rows); !reflect.DeepEqual(gotSixNationsData, tt.wantSixNationsData) {
+//				t.Errorf("MapPSQLRowsToLeaderboardData() = %v, want %v", gotSixNationsData, tt.wantSixNationsData)
 //			}
 //		})
 //	}

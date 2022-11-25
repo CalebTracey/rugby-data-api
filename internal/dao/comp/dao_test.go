@@ -4,68 +4,64 @@ import (
 	"context"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/calebtracey/rugby-data-api/external/models"
-	"github.com/calebtracey/rugby-data-api/external/models/response"
 	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
 	"github.com/calebtracey/rugby-data-api/internal/mocks/compmocks"
+	"github.com/calebtracey/rugby-data-api/internal/mocks/dbmocks"
+	"github.com/calebtracey/rugby-models/models"
+	"github.com/calebtracey/rugby-models/response"
 	"github.com/golang/mock/gomock"
 	"reflect"
 	"regexp"
 	"testing"
 )
 
-func TestSNDAO_GetTeams(t *testing.T) {
+func TestDAO_GetLeaderboardData(t *testing.T) {
 	_, mock, _ := sqlmock.New()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockDao := psql.NewMockDAOI(ctrl)
+	mockDao := dbmocks.NewMockDAOI(ctrl)
 	mockMapper := compmocks.NewMockMapperI(ctrl)
 	cols := []string{"comp_id", "comp_name", "team_id", "team_name"}
 
 	type fields struct {
-		PSQLDAO    psql.DAOI
-		PSQLMapper MapperI
+		DbDAO  psql.DAOI
+		Mapper MapperI
 	}
 	type args struct {
 		ctx   context.Context
 		query string
 	}
 	tests := []struct {
-		name             string
-		fields           fields
-		args             args
-		mockCols         []string
-		mockCompDataList models.PSQLCompetitionDataList
-		wantCompResponse response.LeaderboardResponse
-		wantErr          *response.ErrorLog
+		name     string
+		fields   fields
+		args     args
+		mockCols []string
+		wantRes  models.PSQLLeaderboardDataList
+		wantErr  *response.ErrorLog
 	}{
 		{
 			name: "Happy Path",
 			fields: fields{
-				PSQLDAO:    mockDao,
-				PSQLMapper: mockMapper,
+				DbDAO:  mockDao,
+				Mapper: mockMapper,
 			},
 			args: args{
 				ctx:   context.Background(),
 				query: fmt.Sprintf(PSQLCompetitionByID, "123"),
 			},
 			mockCols: cols,
-			mockCompDataList: models.PSQLCompetitionDataList{
+			wantRes: models.PSQLLeaderboardDataList{
 				{
-					CompName: "Test",
-					CompID:   123,
-					TeamID:   321,
-					TeamName: "Test",
+					CompId:   "123",
+					CompName: "Test Comp",
+					TeamId:   "1",
+					TeamName: "Team 1",
 				},
-			},
-			wantCompResponse: response.LeaderboardResponse{
-				ID:   "123",
-				Name: "Test",
-				Teams: models.TeamDataList{
-					{
-						Name: "Test",
-						ID:   "321",
-					},
+				{
+					CompId:   "123",
+					CompName: "Test Comp",
+					TeamId:   "2",
+					TeamName: "Team 2",
 				},
 			},
 			wantErr: nil,
@@ -74,23 +70,22 @@ func TestSNDAO_GetTeams(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := DAO{
-				PSQLDAO:    tt.fields.PSQLDAO,
-				PSQLMapper: tt.fields.PSQLMapper,
+				DbDAO:  tt.fields.DbDAO,
+				Mapper: tt.fields.Mapper,
 			}
 			rows := sqlmock.NewRows(tt.mockCols).
-				AddRow(1, "comp 1", 10, "team 1").
-				AddRow(1, "comp 1", 5, "team 2")
+				AddRow(123, "Test Comp", 1, "Team 1").
+				AddRow(123, "Test Comp", 2, "Team 2")
 			mock.ExpectBegin()
 			mockDao.EXPECT().FindAll(tt.args.ctx, tt.args.query).
 				DoAndReturn(func(ctx context.Context, query string) (*sqlmock.Rows, *response.ErrorLog) {
 					mock.ExpectQuery(regexp.QuoteMeta(tt.args.query)).WillReturnRows(rows)
 					return rows, nil
 				})
-			mockMapper.EXPECT().MapPSQLRowsToCompetitionData(gomock.Any()).Return(tt.mockCompDataList)
-			mockMapper.EXPECT().MapCompetitionDataResponse(gomock.Any()).Return(tt.wantCompResponse)
+			mockMapper.EXPECT().MapPSQLRowsToLeaderboardData(gomock.Any()).Return(tt.wantRes)
 			gotCompResponse, gotErr := s.GetLeaderboardData(tt.args.ctx, tt.args.query)
-			if !reflect.DeepEqual(gotCompResponse, tt.wantCompResponse) {
-				t.Errorf("GetLeaderboardData() gotCompResponse = %v, want %v", gotCompResponse, tt.wantCompResponse)
+			if !reflect.DeepEqual(gotCompResponse, tt.wantRes) {
+				t.Errorf("GetLeaderboardData() gotCompResponse = %v, want %v", gotCompResponse, tt.wantRes)
 			}
 			if !reflect.DeepEqual(gotErr, tt.wantErr) {
 				t.Errorf("GetLeaderboardData() gotErr = %v, want %v", gotErr, tt.wantErr)

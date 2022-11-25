@@ -8,7 +8,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	response "github.com/calebtracey/rugby-data-api/external/models/response"
+	models "github.com/calebtracey/rugby-models/models"
+	response "github.com/calebtracey/rugby-models/response"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -36,10 +37,10 @@ func (m *MockDAOI) EXPECT() *MockDAOIMockRecorder {
 }
 
 // GetLeaderboardData mocks base method.
-func (m *MockDAOI) GetLeaderboardData(arg0 context.Context, arg1 string) (response.LeaderboardResponse, *response.ErrorLog) {
+func (m *MockDAOI) GetLeaderboardData(arg0 context.Context, arg1 string) (models.PSQLLeaderboardDataList, *response.ErrorLog) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetLeaderboardData", arg0, arg1)
-	ret0, _ := ret[0].(response.LeaderboardResponse)
+	ret0, _ := ret[0].(models.PSQLLeaderboardDataList)
 	ret1, _ := ret[1].(*response.ErrorLog)
 	return ret0, ret1
 }

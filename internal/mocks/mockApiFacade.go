@@ -8,8 +8,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	request "github.com/calebtracey/rugby-data-api/external/models/request"
-	response "github.com/calebtracey/rugby-data-api/external/models/response"
+	request "github.com/calebtracey/rugby-models/request"
+	response "github.com/calebtracey/rugby-models/response"
 	gomock "github.com/golang/mock/gomock"
 )
 

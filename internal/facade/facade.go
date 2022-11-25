@@ -2,9 +2,9 @@ package facade
 
 import (
 	"context"
-	"github.com/calebtracey/rugby-data-api/external/models/request"
-	"github.com/calebtracey/rugby-data-api/external/models/response"
 	"github.com/calebtracey/rugby-data-api/internal/facade/comp"
+	"github.com/calebtracey/rugby-models/request"
+	"github.com/calebtracey/rugby-models/response"
 	"strings"
 )
 
@@ -22,7 +22,7 @@ type APIFacade struct {
 func (s APIFacade) GetCompetitionData(ctx context.Context, req request.LeaderboardRequest) (resp response.LeaderboardResponse) {
 	//TODO add validation
 	if strings.EqualFold(req.Source, PSQLDatabaseSource) {
-		resp = s.CompService.LeaderboardData(ctx)
+		resp = s.CompService.LeaderboardData(ctx, req.CompId)
 	}
 	return resp
 }

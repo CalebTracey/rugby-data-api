@@ -19,10 +19,10 @@ func initializeDAO(config config.Config) (facade.APIFacadeI, error) {
 	return facade.APIFacade{
 		CompService: c.Facade{
 			CompDAO: comp.DAO{
-				PSQLDAO: psql.DAO{
+				DbDAO: psql.DAO{
 					DB: psqlDbConfig.DB,
 				},
-				PSQLMapper: comp.Mapper{},
+				Mapper: comp.Mapper{},
 			},
 			CompMapper: comp.Mapper{},
 		},

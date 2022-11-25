@@ -2,16 +2,15 @@ package comp
 
 import (
 	"context"
-	"github.com/calebtracey/rugby-data-api/external/models/response"
 	"github.com/calebtracey/rugby-data-api/internal/dao/comp"
+	"github.com/calebtracey/rugby-models/response"
 	log "github.com/sirupsen/logrus"
+	"strings"
 )
-
-const LeagueIDSixNations = "180659"
 
 //go:generate mockgen -destination=../../mocks/compmocks/mockFacade.go -package=compmocks . FacadeI
 type FacadeI interface {
-	LeaderboardData(ctx context.Context) (resp response.LeaderboardResponse)
+	LeaderboardData(ctx context.Context, compName string) (resp response.LeaderboardResponse)
 }
 
 type Facade struct {
@@ -19,10 +18,11 @@ type Facade struct {
 	CompMapper comp.MapperI
 }
 
-func (s Facade) LeaderboardData(ctx context.Context) (resp response.LeaderboardResponse) {
-	teamsQuery := s.CompMapper.CreatePSQLCompetitionQuery(LeagueIDSixNations)
+func (s Facade) LeaderboardData(ctx context.Context, compName string) (resp response.LeaderboardResponse) {
+	compId := getCompId(compName)
+	teamsQuery := s.CompMapper.CreatePSQLCompetitionQuery(compId)
 
-	resp, err := s.CompDAO.GetLeaderboardData(ctx, teamsQuery)
+	leaderboardData, err := s.CompDAO.GetLeaderboardData(ctx, teamsQuery)
 	if err != nil {
 		log.Error(err)
 		return response.LeaderboardResponse{
@@ -33,5 +33,20 @@ func (s Facade) LeaderboardData(ctx context.Context) (resp response.LeaderboardR
 			},
 		}
 	}
+	resp = s.CompMapper.MapPSQLLeaderboardDataToResponse(compId, compName, leaderboardData)
 	return resp
 }
+
+func getCompId(compName string) string {
+	switch strings.ToLower(compName) {
+	case SixNations:
+		return SixNationsId
+	default:
+		return ""
+	}
+}
+
+const (
+	SixNations   = "six nations"
+	SixNationsId = "180659"
+)

@@ -3,17 +3,16 @@ package comp
 import (
 	"database/sql"
 	"fmt"
-	"github.com/calebtracey/rugby-data-api/external/models"
-	"github.com/calebtracey/rugby-data-api/external/models/response"
+	"github.com/calebtracey/rugby-models/models"
+	"github.com/calebtracey/rugby-models/response"
 	log "github.com/sirupsen/logrus"
-	"strconv"
 )
 
 //go:generate mockgen -destination=../../mocks/compmocks/mockMapper.go -package=compmocks . MapperI
 type MapperI interface {
 	CreatePSQLCompetitionQuery(teamId string) string
-	MapPSQLRowsToCompetitionData(rows *sql.Rows) (sixNationsData models.PSQLCompetitionDataList)
-	MapCompetitionDataResponse(sixNationsData models.PSQLCompetitionDataList) (resp response.LeaderboardResponse)
+	MapPSQLRowsToLeaderboardData(rows *sql.Rows) (leaderboardData models.PSQLLeaderboardDataList)
+	MapPSQLLeaderboardDataToResponse(compId, compName string, leaderboardData models.PSQLLeaderboardDataList) (resp response.LeaderboardResponse)
 }
 
 type Mapper struct{}
@@ -22,31 +21,59 @@ func (m Mapper) CreatePSQLCompetitionQuery(teamId string) string {
 	return fmt.Sprintf(PSQLCompetitionByID, teamId)
 }
 
-func (m Mapper) MapPSQLRowsToCompetitionData(rows *sql.Rows) (sixNationsData models.PSQLCompetitionDataList) {
-	var data models.PSQLCompetitionData
+func (m Mapper) MapPSQLRowsToLeaderboardData(rows *sql.Rows) (leaderboardData models.PSQLLeaderboardDataList) {
+	var data models.PSQLLeaderboardData
 	for rows.Next() {
 		err := rows.Scan(
-			&data.CompID,
+			&data.CompId,
 			&data.CompName,
-			&data.TeamID,
+			&data.TeamId,
 			&data.TeamName,
+			&data.GamesPlayed,
+			&data.WinCount,
+			&data.DrawCount,
+			&data.LossCount,
+			&data.Bye,
+			&data.PointsFor,
+			&data.PointsAgainst,
+			&data.TriesFor,
+			&data.TriesAgainst,
+			&data.BonusPointsTry,
+			&data.BonusPointsLosing,
+			&data.BonusPoints,
+			&data.PointsDiff,
+			&data.Points,
 		)
 		if err != nil {
 			log.Panicln(err)
 		}
-		sixNationsData = append(sixNationsData, data)
+		leaderboardData = append(leaderboardData, data)
 	}
 
-	return sixNationsData
+	return leaderboardData
 }
 
-func (m Mapper) MapCompetitionDataResponse(sixNationsData models.PSQLCompetitionDataList) (resp response.LeaderboardResponse) {
-	resp.ID = strconv.Itoa(sixNationsData[0].CompID)
-	resp.Name = sixNationsData[0].CompName
-	for _, data := range sixNationsData {
-		resp.Teams = append(resp.Teams, models.TeamData{
-			ID:   strconv.Itoa(data.TeamID),
-			Name: data.TeamName,
+func (m Mapper) MapPSQLLeaderboardDataToResponse(compId, compName string, leaderboardData models.PSQLLeaderboardDataList) (resp response.LeaderboardResponse) {
+	resp.Id = compId
+	resp.Name = compName
+	for _, data := range leaderboardData {
+		resp.Teams = append(resp.Teams, models.TeamLeaderboardData{
+			Id:                data.TeamId,
+			Name:              data.TeamName,
+			GamesPlayed:       data.GamesPlayed,
+			WinCount:          data.WinCount,
+			DrawCount:         data.DrawCount,
+			LossCount:         data.LossCount,
+			Bye:               data.Bye,
+			PointsFor:         data.PointsFor,
+			PointsAgainst:     data.PointsAgainst,
+			TriesFor:          data.TriesFor,
+			TriesAgainst:      data.TriesAgainst,
+			BonusPointsTry:    data.BonusPointsTry,
+			BonusPointsLosing: data.BonusPointsLosing,
+			BonusPoints:       data.BonusPoints,
+			PointsDiff:        data.PointsDiff,
+			Points:            data.Points,
 		})
 	}
 	return resp

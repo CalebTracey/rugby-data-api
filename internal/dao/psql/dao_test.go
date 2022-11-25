@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/calebtracey/rugby-data-api/external/models/response"
+	"github.com/calebtracey/rugby-models/response"
 	"reflect"
 	"testing"
 )

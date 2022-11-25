@@ -2,27 +2,27 @@ package comp
 
 import (
 	"context"
-	"github.com/calebtracey/rugby-data-api/external/models/response"
 	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
+	"github.com/calebtracey/rugby-models/models"
+	"github.com/calebtracey/rugby-models/response"
 )
 
 //go:generate mockgen -destination=../../mocks/compmocks/mockDao.go -package=compmocks . DAOI
 type DAOI interface {
-	GetLeaderboardData(ctx context.Context, query string) (psqlTeamsResponse response.LeaderboardResponse, err *response.ErrorLog)
+	GetLeaderboardData(ctx context.Context, query string) (resp models.PSQLLeaderboardDataList, err *response.ErrorLog)
 }
 
 type DAO struct {
-	PSQLDAO    psql.DAOI
-	PSQLMapper MapperI
+	DbDAO  psql.DAOI
+	Mapper MapperI
 }
 
-func (s DAO) GetLeaderboardData(ctx context.Context, query string) (compResponse response.LeaderboardResponse, err *response.ErrorLog) {
-	rows, err := s.PSQLDAO.FindAll(ctx, query)
+func (s DAO) GetLeaderboardData(ctx context.Context, query string) (resp models.PSQLLeaderboardDataList, err *response.ErrorLog) {
+	rows, err := s.DbDAO.FindAll(ctx, query)
 	if err != nil {
-		return compResponse, err
+		return resp, err
 	}
-	compData := s.PSQLMapper.MapPSQLRowsToCompetitionData(rows)
-	compResponse = s.PSQLMapper.MapCompetitionDataResponse(compData)
+	resp = s.Mapper.MapPSQLRowsToLeaderboardData(rows)
 
-	return compResponse, err
+	return resp, nil
 }

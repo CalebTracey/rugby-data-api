@@ -2,10 +2,10 @@ package routes
 
 import (
 	"encoding/json"
-	"github.com/calebtracey/rugby-data-api/external/models/request"
-	"github.com/calebtracey/rugby-data-api/external/models/response"
 	"github.com/calebtracey/rugby-data-api/internal/facade"
 	_ "github.com/calebtracey/rugby-data-api/internal/routes/statik"
+	"github.com/calebtracey/rugby-models/request"
+	"github.com/calebtracey/rugby-models/response"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/sirupsen/logrus"
