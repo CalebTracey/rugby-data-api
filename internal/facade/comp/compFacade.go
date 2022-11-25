@@ -3,7 +3,7 @@ package comp
 import (
 	"context"
 	"github.com/calebtracey/rugby-data-api/internal/dao/comp"
-	"github.com/calebtracey/rugby-models/response"
+	"github.com/calebtracey/rugby-models/pkg/dtos/response"
 	log "github.com/sirupsen/logrus"
 	"strings"
 )

@@ -7,8 +7,9 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/calebtracey/rugby-data-api/internal/dao/comp"
 	"github.com/calebtracey/rugby-data-api/internal/mocks/compmocks"
-	"github.com/calebtracey/rugby-models/models"
-	"github.com/calebtracey/rugby-models/response"
+	"github.com/calebtracey/rugby-models/pkg/dtos"
+	"github.com/calebtracey/rugby-models/pkg/dtos/response"
+	"github.com/calebtracey/rugby-models/pkg/models"
 	"github.com/golang/mock/gomock"
 	"reflect"
 	"testing"
@@ -66,7 +67,7 @@ func TestFacade_LeaderboardData(t *testing.T) {
 			wantResp: response.LeaderboardResponse{
 				Id:   "180659",
 				Name: "six nations",
-				Teams: models.TeamLeaderboardDataList{
+				Teams: dtos.TeamLeaderboardDataList{
 					{
 						Id:   "1",
 						Name: "Team 1",
