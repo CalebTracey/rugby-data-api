@@ -8,11 +8,11 @@ ClientConfig:
   MaxConsPerHost: 1
 DatabaseConfigs:
   - Name: "PSQL"
-    Database: "rugby_db"
-    Server: "localhost:5432"
-    Username: "calebtracey"
+    Database: "postgres"
+    Server: "db.qcgjaptyxgcmagtvntln.supabase.co:5432"
+    Username: "postgres"
     Scheme: "postgres"
-    PasswordEnvVariable: "DB_PASSWORD_LOCAL"
+    PasswordEnvVariable: "DB_PASSWORD_DEV"
 CrawlerConfigs:
   - Name: "COLLY"
     AppsJSONPath: ""
