@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-const PSQLDatabaseSource = "psql_db"
+const PSQLDatabaseSource = "rugby_db"
 
 //go:generate mockgen -destination=../mocks/mockApiFacade.go -package=mocks . APIFacadeI
 type APIFacadeI interface {
@@ -22,7 +22,7 @@ type APIFacade struct {
 func (s APIFacade) GetCompetitionData(ctx context.Context, req request.LeaderboardRequest) (resp response.LeaderboardResponse) {
 	//TODO add validation
 	if strings.EqualFold(req.Source, PSQLDatabaseSource) {
-		resp = s.CompService.LeaderboardData(ctx, req.CompId)
+		resp = s.CompService.LeaderboardData(ctx, req.CompName)
 	}
 	return resp
 }

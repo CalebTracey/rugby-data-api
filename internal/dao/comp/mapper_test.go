@@ -14,7 +14,7 @@ func TestMapper_CreatePSQLCompetitionQuery(t *testing.T) {
 		{
 			name:   "Happy Path",
 			teamId: "123",
-			want:   fmt.Sprintf(PSQLCompetitionByID, "123"),
+			want:   fmt.Sprintf(PSQLLeaderboardById, 123),
 		},
 	}
 	for _, tt := range tests {
