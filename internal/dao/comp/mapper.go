@@ -6,6 +6,7 @@ import (
 	"github.com/calebtracey/rugby-models/models"
 	"github.com/calebtracey/rugby-models/response"
 	log "github.com/sirupsen/logrus"
+	"strconv"
 )
 
 //go:generate mockgen -destination=../../mocks/compmocks/mockMapper.go -package=compmocks . MapperI
@@ -18,7 +19,12 @@ type MapperI interface {
 type Mapper struct{}
 
 func (m Mapper) CreatePSQLCompetitionQuery(teamId string) string {
-	return fmt.Sprintf(PSQLCompetitionByID, teamId)
+	teamIdInt, err := strconv.Atoi(teamId)
+	if err != nil {
+		log.Error(err)
+		return ""
+	}
+	return fmt.Sprintf(PSQLLeaderboardById, teamIdInt)
 }
 
 func (m Mapper) MapPSQLRowsToLeaderboardData(rows *sql.Rows) (leaderboardData models.PSQLLeaderboardDataList) {
@@ -58,7 +64,7 @@ func (m Mapper) MapPSQLLeaderboardDataToResponse(compId, compName string, leader
 	resp.Name = compName
 	for _, data := range leaderboardData {
 		resp.Teams = append(resp.Teams, models.TeamLeaderboardData{
-			Id:                data.TeamId,
+			Id:                strconv.Itoa(data.TeamId),
 			Name:              data.TeamName,
 			GamesPlayed:       data.GamesPlayed,
 			WinCount:          data.WinCount,
@@ -91,6 +97,8 @@ const (
 			unnest(c.teams) t_id
 			join teams t on (t.team_id = t_id)
 		where
-			c.comp_id = '%s'
+			c.comp_id = '%v'
 	) select comp_id, comp_name, team_id, team_name from comp_teams;`
+
+	PSQLLeaderboardById = `select * from public.comp_leaderboard where comp_id = '%v'`
 )
