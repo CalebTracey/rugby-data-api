@@ -117,7 +117,7 @@ func (c *Client) GetCompetition(ctx context.Context, body GetCompetitionJSONRequ
 	return c.Client.Do(req)
 }
 
-// NewGetCompetitionRequest calls the generic GetCompetition builder with application/json body
+// NewGetCompetitionRequest calls the generic GetLeaderboardData builder with application/json body
 func NewGetCompetitionRequest(server string, body GetCompetitionJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
@@ -128,7 +128,7 @@ func NewGetCompetitionRequest(server string, body GetCompetitionJSONRequestBody)
 	return NewGetCompetitionRequestWithBody(server, "application/json", bodyReader)
 }
 
-// NewGetCompetitionRequestWithBody generates requests for GetCompetition with any type of body
+// NewGetCompetitionRequestWithBody generates requests for GetLeaderboardData with any type of body
 func NewGetCompetitionRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
@@ -200,7 +200,7 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
-	// GetCompetition request with any body
+	// GetLeaderboardData request with any body
 	GetCompetitionWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*GetCompetitionResponse, error)
 
 	GetCompetitionWithResponse(ctx context.Context, body GetCompetitionJSONRequestBody, reqEditors ...RequestEditorFn) (*GetCompetitionResponse, error)

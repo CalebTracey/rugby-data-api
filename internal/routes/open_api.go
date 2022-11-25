@@ -7,10 +7,10 @@ import (
 	"net/http"
 )
 
-//go:generate statik -src=/Users/calebtracey/Desktop/Code/rugby-data-api/swagger-ui
 //go:generate go run ../../cmd/openapi-gen/main.go -path ../../swagger-ui
 //go:generate oapi-codegen -package openapi3 -generate types  -o ../../pkg/openapi3/types.gen.go ../../swagger-ui/openapi3.yaml
 //go:generate oapi-codegen -package openapi3 -generate client -o ../../pkg/openapi3/client.gen.go ../../swagger-ui/openapi3.yaml
+//go:generate statik -src=/Users/calebtracey/Desktop/Code/rugby-data-api/swagger-ui
 
 // NewOpenAPI3 instantiates the OpenAPI specification for this service.
 func NewOpenAPI3() openapi3.T {
@@ -53,11 +53,12 @@ func NewOpenAPI3() openapi3.T {
 					WithNullable()).
 				WithProperty("name", openapi3.NewStringSchema().
 					WithNullable())),
-		"TeamDataList": openapi3.NewSchemaRef("",
-			openapi3.NewArraySchema().
-				WithPropertyRef("teamData", &openapi3.SchemaRef{
+		"TeamDataList": openapi3.NewArraySchema().
+			WithItems(&openapi3.Schema{
+				Type: openapi3.TypeArray,
+				Items: &openapi3.SchemaRef{
 					Ref: "#/components/schemas/TeamData",
-				})),
+				}}).Items,
 		"PSQLTeamData": openapi3.NewSchemaRef("",
 			openapi3.NewObjectSchema().
 				WithProperty("team_id", openapi3.NewStringSchema().
@@ -82,24 +83,25 @@ func NewOpenAPI3() openapi3.T {
 					WithNullable()).
 				WithProperty("query", openapi3.NewStringSchema().
 					WithNullable())),
-		"ErrorLogs": openapi3.NewSchemaRef("",
-			openapi3.NewArraySchema().
-				WithPropertyRef("errLog", &openapi3.SchemaRef{
+		"ErrorLogs": openapi3.NewArraySchema().
+			WithItems(&openapi3.Schema{
+				Type: openapi3.TypeArray,
+				Items: &openapi3.SchemaRef{
 					Ref: "#/components/schemas/ErrorLog",
-				})),
+				}}).Items,
 		"Message": openapi3.NewSchemaRef("",
 			openapi3.NewObjectSchema().
 				WithPropertyRef("errorLog", &openapi3.SchemaRef{
 					Ref: "#/components/schemas/ErrorLogs",
 				}).
-				WithProperty("name", openapi3.NewStringSchema().
+				WithProperty("hostName", openapi3.NewStringSchema().
 					WithNullable()).
-				WithPropertyRef("teams", &openapi3.SchemaRef{
-					Ref: "#/components/schemas/TeamDataList",
-				}).
-				WithPropertyRef("message", &openapi3.SchemaRef{
-					Ref: "#/components/schemas/Message",
-				})),
+				WithProperty("status", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("timeTaken", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("count", openapi3.NewStringSchema().
+					WithNullable())),
 	}
 
 	swagger.Components.RequestBodies = openapi3.RequestBodies{
@@ -163,8 +165,9 @@ func NewOpenAPI3() openapi3.T {
 
 	swagger.Paths = openapi3.Paths{
 		"/competition": &openapi3.PathItem{
+			Description: "Competition Data",
 			Post: &openapi3.Operation{
-				OperationID: "GetCompetition",
+				OperationID: "GetLeaderboardData",
 				RequestBody: &openapi3.RequestBodyRef{
 					Ref: "#/components/requestBodies/CompetitionRequest",
 				},

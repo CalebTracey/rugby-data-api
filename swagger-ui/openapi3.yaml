@@ -83,21 +83,25 @@ components:
           type: string
       type: object
     ErrorLogs:
-      properties:
-        errLog:
-          $ref: '#/components/schemas/ErrorLog'
+      items:
+        $ref: '#/components/schemas/ErrorLog'
       type: array
     Message:
       properties:
-        errorLog:
-          $ref: '#/components/schemas/ErrorLogs'
-        message:
-          $ref: '#/components/schemas/Message'
-        name:
+        count:
           nullable: true
           type: string
-        teams:
-          $ref: '#/components/schemas/TeamDataList'
+        errorLog:
+          $ref: '#/components/schemas/ErrorLogs'
+        hostName:
+          nullable: true
+          type: string
+        status:
+          nullable: true
+          type: string
+        timeTaken:
+          nullable: true
+          type: string
       type: object
     PSQLCompetitionData:
       properties:
@@ -137,9 +141,8 @@ components:
           type: string
       type: object
     TeamDataList:
-      properties:
-        teamData:
-          $ref: '#/components/schemas/TeamData'
+      items:
+        $ref: '#/components/schemas/TeamData'
       type: array
 info:
   contact:
@@ -153,6 +156,7 @@ info:
 openapi: 3.0.0
 paths:
   /competition:
+    description: Competition Data
     post:
       operationId: GetCompetition
       requestBody:

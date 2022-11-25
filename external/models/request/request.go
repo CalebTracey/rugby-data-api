@@ -1,6 +1,6 @@
 package request
 
-type CompetitionRequest struct {
+type LeaderboardRequest struct {
 	Source          string `json:"source,omitempty"`
 	CompetitionID   string `json:"competitionID,omitempty"`
 	CompetitionName string `json:"competitionName,omitempty"`

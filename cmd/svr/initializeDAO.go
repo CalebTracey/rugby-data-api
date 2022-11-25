@@ -2,11 +2,10 @@ package main
 
 import (
 	config "github.com/calebtracey/config-yaml"
-	sncrawl "github.com/calebtracey/rugby-data-api/internal/dao/crawl/sixnations"
-	"github.com/calebtracey/rugby-data-api/internal/dao/database/comp"
-	"github.com/calebtracey/rugby-data-api/internal/dao/database/psql"
+	"github.com/calebtracey/rugby-data-api/internal/dao/comp"
+	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
 	"github.com/calebtracey/rugby-data-api/internal/facade"
-	sn "github.com/calebtracey/rugby-data-api/internal/facade/sixnations"
+	c "github.com/calebtracey/rugby-data-api/internal/facade/comp"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -16,24 +15,16 @@ func initializeDAO(config config.Config) (facade.APIFacadeI, error) {
 		log.Error(err)
 		return nil, err
 	}
-	collyCrawlerConfig, err := config.GetCrawlConfig("COLLY")
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
 
 	return facade.APIFacade{
-		SNDAO: sn.Facade{
-			SNCrawler: sncrawl.DAO{
-				Collector: collyCrawlerConfig.Collector,
-			},
-			SNPSQL: comp.DAO{
+		CompService: c.Facade{
+			CompDAO: comp.DAO{
 				PSQLDAO: psql.DAO{
 					DB: psqlDbConfig.DB,
 				},
 				PSQLMapper: comp.Mapper{},
 			},
-			SNMapper: comp.Mapper{},
+			CompMapper: comp.Mapper{},
 		},
 	}, nil
 }

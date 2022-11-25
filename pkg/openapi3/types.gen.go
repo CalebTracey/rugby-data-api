@@ -13,14 +13,15 @@ type ErrorLog struct {
 }
 
 // ErrorLogs defines model for ErrorLogs.
-type ErrorLogs = []interface{}
+type ErrorLogs = []ErrorLog
 
 // Message defines model for Message.
 type Message struct {
-	ErrorLog *ErrorLogs    `json:"errorLog,omitempty"`
-	Message  *Message      `json:"message,omitempty"`
-	Name     *string       `json:"name"`
-	Teams    *TeamDataList `json:"teams,omitempty"`
+	Count     *string    `json:"count"`
+	ErrorLog  *ErrorLogs `json:"errorLog,omitempty"`
+	HostName  *string    `json:"hostName"`
+	Status    *string    `json:"status"`
+	TimeTaken *string    `json:"timeTaken"`
 }
 
 // TeamData defines model for TeamData.
@@ -30,7 +31,7 @@ type TeamData struct {
 }
 
 // TeamDataList defines model for TeamDataList.
-type TeamDataList = []interface{}
+type TeamDataList = []TeamData
 
 // CompetitionResponse defines model for CompetitionResponse.
 type CompetitionResponse struct {
@@ -49,7 +50,7 @@ type CompetitionRequest struct {
 	Table           *string `json:"table,omitempty"`
 }
 
-// GetCompetitionJSONBody defines parameters for GetCompetition.
+// GetCompetitionJSONBody defines parameters for GetLeaderboardData.
 type GetCompetitionJSONBody struct {
 	CompetitionID   *string `json:"competitionID,omitempty"`
 	CompetitionName *string `json:"competitionName,omitempty"`
@@ -58,5 +59,5 @@ type GetCompetitionJSONBody struct {
 	Table           *string `json:"table,omitempty"`
 }
 
-// GetCompetitionJSONRequestBody defines body for GetCompetition for application/json ContentType.
+// GetCompetitionJSONRequestBody defines body for GetLeaderboardData for application/json ContentType.
 type GetCompetitionJSONRequestBody GetCompetitionJSONBody
