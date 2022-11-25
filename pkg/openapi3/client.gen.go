@@ -87,14 +87,14 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
-	// GetCompetition request with any body
-	GetCompetitionWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetLeaderboardData request with any body
+	GetLeaderboardDataWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	GetCompetition(ctx context.Context, body GetCompetitionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetLeaderboardData(ctx context.Context, body GetLeaderboardDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
-func (c *Client) GetCompetitionWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetCompetitionRequestWithBody(c.Server, contentType, body)
+func (c *Client) GetLeaderboardDataWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetLeaderboardDataRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -105,8 +105,8 @@ func (c *Client) GetCompetitionWithBody(ctx context.Context, contentType string,
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetCompetition(ctx context.Context, body GetCompetitionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetCompetitionRequest(c.Server, body)
+func (c *Client) GetLeaderboardData(ctx context.Context, body GetLeaderboardDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetLeaderboardDataRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -117,19 +117,19 @@ func (c *Client) GetCompetition(ctx context.Context, body GetCompetitionJSONRequ
 	return c.Client.Do(req)
 }
 
-// NewGetCompetitionRequest calls the generic GetLeaderboardData builder with application/json body
-func NewGetCompetitionRequest(server string, body GetCompetitionJSONRequestBody) (*http.Request, error) {
+// NewGetLeaderboardDataRequest calls the generic GetLeaderboardData builder with application/json body
+func NewGetLeaderboardDataRequest(server string, body GetLeaderboardDataJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewGetCompetitionRequestWithBody(server, "application/json", bodyReader)
+	return NewGetLeaderboardDataRequestWithBody(server, "application/json", bodyReader)
 }
 
-// NewGetCompetitionRequestWithBody generates requests for GetLeaderboardData with any type of body
-func NewGetCompetitionRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewGetLeaderboardDataRequestWithBody generates requests for GetLeaderboardData with any type of body
+func NewGetLeaderboardDataRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -137,7 +137,7 @@ func NewGetCompetitionRequestWithBody(server string, contentType string, body io
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/competition")
+	operationPath := fmt.Sprintf("/leaderboard")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -201,36 +201,36 @@ func WithBaseURL(baseURL string) ClientOption {
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
 	// GetLeaderboardData request with any body
-	GetCompetitionWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*GetCompetitionResponse, error)
+	GetLeaderboardDataWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*GetLeaderboardDataResponse, error)
 
-	GetCompetitionWithResponse(ctx context.Context, body GetCompetitionJSONRequestBody, reqEditors ...RequestEditorFn) (*GetCompetitionResponse, error)
+	GetLeaderboardDataWithResponse(ctx context.Context, body GetLeaderboardDataJSONRequestBody, reqEditors ...RequestEditorFn) (*GetLeaderboardDataResponse, error)
 }
 
-type GetCompetitionResponse struct {
+type GetLeaderboardDataResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
-		Id      *string       `json:"id"`
-		Message *Message      `json:"message,omitempty"`
-		Name    *string       `json:"name,omitempty"`
-		Teams   *TeamDataList `json:"teams,omitempty"`
+		Id      *string                  `json:"id"`
+		Message *Message                 `json:"message,omitempty"`
+		Name    *string                  `json:"name,omitempty"`
+		Teams   *TeamLeaderboardDataList `json:"teams,omitempty"`
 	}
 	JSON400 *struct {
-		Id      *string       `json:"id"`
-		Message *Message      `json:"message,omitempty"`
-		Name    *string       `json:"name,omitempty"`
-		Teams   *TeamDataList `json:"teams,omitempty"`
+		Id      *string                  `json:"id"`
+		Message *Message                 `json:"message,omitempty"`
+		Name    *string                  `json:"name,omitempty"`
+		Teams   *TeamLeaderboardDataList `json:"teams,omitempty"`
 	}
 	JSON500 *struct {
-		Id      *string       `json:"id"`
-		Message *Message      `json:"message,omitempty"`
-		Name    *string       `json:"name,omitempty"`
-		Teams   *TeamDataList `json:"teams,omitempty"`
+		Id      *string                  `json:"id"`
+		Message *Message                 `json:"message,omitempty"`
+		Name    *string                  `json:"name,omitempty"`
+		Teams   *TeamLeaderboardDataList `json:"teams,omitempty"`
 	}
 }
 
 // Status returns HTTPResponse.Status
-func (r GetCompetitionResponse) Status() string {
+func (r GetLeaderboardDataResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -238,39 +238,39 @@ func (r GetCompetitionResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetCompetitionResponse) StatusCode() int {
+func (r GetLeaderboardDataResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-// GetCompetitionWithBodyWithResponse request with arbitrary body returning *GetCompetitionResponse
-func (c *ClientWithResponses) GetCompetitionWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*GetCompetitionResponse, error) {
-	rsp, err := c.GetCompetitionWithBody(ctx, contentType, body, reqEditors...)
+// GetLeaderboardDataWithBodyWithResponse request with arbitrary body returning *GetLeaderboardDataResponse
+func (c *ClientWithResponses) GetLeaderboardDataWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*GetLeaderboardDataResponse, error) {
+	rsp, err := c.GetLeaderboardDataWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetCompetitionResponse(rsp)
+	return ParseGetLeaderboardDataResponse(rsp)
 }
 
-func (c *ClientWithResponses) GetCompetitionWithResponse(ctx context.Context, body GetCompetitionJSONRequestBody, reqEditors ...RequestEditorFn) (*GetCompetitionResponse, error) {
-	rsp, err := c.GetCompetition(ctx, body, reqEditors...)
+func (c *ClientWithResponses) GetLeaderboardDataWithResponse(ctx context.Context, body GetLeaderboardDataJSONRequestBody, reqEditors ...RequestEditorFn) (*GetLeaderboardDataResponse, error) {
+	rsp, err := c.GetLeaderboardData(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetCompetitionResponse(rsp)
+	return ParseGetLeaderboardDataResponse(rsp)
 }
 
-// ParseGetCompetitionResponse parses an HTTP response from a GetCompetitionWithResponse call
-func ParseGetCompetitionResponse(rsp *http.Response) (*GetCompetitionResponse, error) {
+// ParseGetLeaderboardDataResponse parses an HTTP response from a GetLeaderboardDataWithResponse call
+func ParseGetLeaderboardDataResponse(rsp *http.Response) (*GetLeaderboardDataResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetCompetitionResponse{
+	response := &GetLeaderboardDataResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -278,10 +278,10 @@ func ParseGetCompetitionResponse(rsp *http.Response) (*GetCompetitionResponse, e
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
 		var dest struct {
-			Id      *string       `json:"id"`
-			Message *Message      `json:"message,omitempty"`
-			Name    *string       `json:"name,omitempty"`
-			Teams   *TeamDataList `json:"teams,omitempty"`
+			Id      *string                  `json:"id"`
+			Message *Message                 `json:"message,omitempty"`
+			Name    *string                  `json:"name,omitempty"`
+			Teams   *TeamLeaderboardDataList `json:"teams,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -290,10 +290,10 @@ func ParseGetCompetitionResponse(rsp *http.Response) (*GetCompetitionResponse, e
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest struct {
-			Id      *string       `json:"id"`
-			Message *Message      `json:"message,omitempty"`
-			Name    *string       `json:"name,omitempty"`
-			Teams   *TeamDataList `json:"teams,omitempty"`
+			Id      *string                  `json:"id"`
+			Message *Message                 `json:"message,omitempty"`
+			Name    *string                  `json:"name,omitempty"`
+			Teams   *TeamLeaderboardDataList `json:"teams,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -302,10 +302,10 @@ func ParseGetCompetitionResponse(rsp *http.Response) (*GetCompetitionResponse, e
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest struct {
-			Id      *string       `json:"id"`
-			Message *Message      `json:"message,omitempty"`
-			Name    *string       `json:"name,omitempty"`
-			Teams   *TeamDataList `json:"teams,omitempty"`
+			Id      *string                  `json:"id"`
+			Message *Message                 `json:"message,omitempty"`
+			Name    *string                  `json:"name,omitempty"`
+			Teams   *TeamLeaderboardDataList `json:"teams,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err

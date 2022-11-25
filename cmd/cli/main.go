@@ -15,10 +15,10 @@ func main() {
 
 	source := "psql_db"
 	compId := "180659"
-	respC, err := client.GetCompetitionWithResponse(context.Background(),
-		openapi3.GetCompetitionJSONRequestBody{
-			Source:        &source,
-			CompetitionID: &compId,
+	respC, err := client.GetLeaderboardDataWithResponse(context.Background(),
+		openapi3.GetLeaderboardDataJSONRequestBody{
+			Source: &source,
+			CompId: &compId,
 		})
 	if err != nil {
 		log.Fatalf("Couldn't get competition %s", err)

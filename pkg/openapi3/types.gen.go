@@ -24,40 +24,52 @@ type Message struct {
 	TimeTaken *string    `json:"timeTaken"`
 }
 
-// TeamData defines model for TeamData.
-type TeamData struct {
-	Id   *string `json:"id"`
-	Name *string `json:"name"`
+// TeamLeaderboardData defines model for TeamLeaderboardData.
+type TeamLeaderboardData struct {
+	BonusPoints       *string `json:"bonusPoints"`
+	BonusPointsLosing *string `json:"bonusPointsLosing"`
+	BonusPointsTry    *string `json:"bonusPointsTry"`
+	Bye               *string `json:"bye"`
+	DrawCount         *string `json:"drawCount"`
+	GamesPlayed       *string `json:"gamesPlayed"`
+	Id                *string `json:"id"`
+	LossCount         *string `json:"lossCount"`
+	Name              *string `json:"name"`
+	Points            *string `json:"points"`
+	PointsAgainst     *string `json:"pointsAgainst"`
+	PointsDiff        *string `json:"pointsDiff"`
+	PointsFor         *string `json:"pointsFor"`
+	TriesAgainst      *string `json:"triesAgainst"`
+	TriesFor          *string `json:"triesFor"`
+	WinCount          *string `json:"winCount"`
 }
 
-// TeamDataList defines model for TeamDataList.
-type TeamDataList = []TeamData
+// TeamLeaderboardDataList defines model for TeamLeaderboardDataList.
+type TeamLeaderboardDataList = []TeamLeaderboardData
 
-// CompetitionResponse defines model for CompetitionResponse.
-type CompetitionResponse struct {
-	Id      *string       `json:"id"`
-	Message *Message      `json:"message,omitempty"`
-	Name    *string       `json:"name,omitempty"`
-	Teams   *TeamDataList `json:"teams,omitempty"`
+// LeaderboardResponse defines model for LeaderboardResponse.
+type LeaderboardResponse struct {
+	Id      *string                  `json:"id"`
+	Message *Message                 `json:"message,omitempty"`
+	Name    *string                  `json:"name,omitempty"`
+	Teams   *TeamLeaderboardDataList `json:"teams,omitempty"`
 }
 
-// CompetitionRequest defines model for CompetitionRequest.
-type CompetitionRequest struct {
-	CompetitionID   *string `json:"competitionID,omitempty"`
-	CompetitionName *string `json:"competitionName,omitempty"`
-	Id              *string `json:"id,omitempty"`
-	Source          *string `json:"source,omitempty"`
-	Table           *string `json:"table,omitempty"`
+// LeaderboardRequest defines model for LeaderboardRequest.
+type LeaderboardRequest struct {
+	CompId   *string `json:"compId,omitempty"`
+	CompName *string `json:"compName,omitempty"`
+	Date     *string `json:"date,omitempty"`
+	Source   *string `json:"source,omitempty"`
 }
 
-// GetCompetitionJSONBody defines parameters for GetLeaderboardData.
-type GetCompetitionJSONBody struct {
-	CompetitionID   *string `json:"competitionID,omitempty"`
-	CompetitionName *string `json:"competitionName,omitempty"`
-	Id              *string `json:"id,omitempty"`
-	Source          *string `json:"source,omitempty"`
-	Table           *string `json:"table,omitempty"`
+// GetLeaderboardDataJSONBody defines parameters for GetLeaderboardData.
+type GetLeaderboardDataJSONBody struct {
+	CompId   *string `json:"compId,omitempty"`
+	CompName *string `json:"compName,omitempty"`
+	Date     *string `json:"date,omitempty"`
+	Source   *string `json:"source,omitempty"`
 }
 
-// GetCompetitionJSONRequestBody defines body for GetLeaderboardData for application/json ContentType.
-type GetCompetitionJSONRequestBody GetCompetitionJSONBody
+// GetLeaderboardDataJSONRequestBody defines body for GetLeaderboardData for application/json ContentType.
+type GetLeaderboardDataJSONRequestBody GetLeaderboardDataJSONBody
