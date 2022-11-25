@@ -3,8 +3,9 @@ package comp
 import (
 	"database/sql"
 	"fmt"
-	"github.com/calebtracey/rugby-models/models"
-	"github.com/calebtracey/rugby-models/response"
+	"github.com/calebtracey/rugby-models/pkg/dtos"
+	"github.com/calebtracey/rugby-models/pkg/dtos/response"
+	"github.com/calebtracey/rugby-models/pkg/models"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 )
@@ -63,7 +64,7 @@ func (m Mapper) MapPSQLLeaderboardDataToResponse(compId, compName string, leader
 	resp.Id = compId
 	resp.Name = compName
 	for _, data := range leaderboardData {
-		resp.Teams = append(resp.Teams, models.TeamLeaderboardData{
+		resp.Teams = append(resp.Teams, dtos.TeamLeaderboardData{
 			Id:                strconv.Itoa(data.TeamId),
 			Name:              data.TeamName,
 			GamesPlayed:       data.GamesPlayed,

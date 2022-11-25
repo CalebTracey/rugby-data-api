@@ -8,8 +8,8 @@ import (
 	sql "database/sql"
 	reflect "reflect"
 
-	models "github.com/calebtracey/rugby-models/models"
-	response "github.com/calebtracey/rugby-models/response"
+	response "github.com/calebtracey/rugby-models/pkg/dtos/response"
+	models "github.com/calebtracey/rugby-models/pkg/models"
 	gomock "github.com/golang/mock/gomock"
 )
 

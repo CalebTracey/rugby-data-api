@@ -5,8 +5,8 @@ go 1.19
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/NYTimes/gziphandler v1.1.1
-	github.com/calebtracey/config-yaml v1.0.4
-	github.com/calebtracey/rugby-models v0.0.4
+	github.com/calebtracey/config-yaml v1.0.5
+	github.com/calebtracey/rugby-models v1.0.0
 	github.com/getkin/kin-openapi v0.109.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/golang/mock v1.6.0

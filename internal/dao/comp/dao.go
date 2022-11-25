@@ -3,8 +3,8 @@ package comp
 import (
 	"context"
 	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
-	"github.com/calebtracey/rugby-models/models"
-	"github.com/calebtracey/rugby-models/response"
+	"github.com/calebtracey/rugby-models/pkg/dtos/response"
+	"github.com/calebtracey/rugby-models/pkg/models"
 )
 
 //go:generate mockgen -destination=../../mocks/compmocks/mockDao.go -package=compmocks . DAOI

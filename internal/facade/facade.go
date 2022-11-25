@@ -3,8 +3,8 @@ package facade
 import (
 	"context"
 	"github.com/calebtracey/rugby-data-api/internal/facade/comp"
-	"github.com/calebtracey/rugby-models/request"
-	"github.com/calebtracey/rugby-models/response"
+	"github.com/calebtracey/rugby-models/pkg/dtos/request"
+	"github.com/calebtracey/rugby-models/pkg/dtos/response"
 	"strings"
 )
 

@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	response "github.com/calebtracey/rugby-models/response"
+	response "github.com/calebtracey/rugby-models/pkg/dtos/response"
 	gomock "github.com/golang/mock/gomock"
 )
 
