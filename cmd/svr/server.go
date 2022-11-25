@@ -62,7 +62,7 @@ func listenAndServe(addr string, handler http.Handler) error {
 	return serverError
 }
 
-func CorsHandler() *cors.Cors {
+func corsHandler() *cors.Cors {
 	return cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:6080"},
 		AllowCredentials: true,

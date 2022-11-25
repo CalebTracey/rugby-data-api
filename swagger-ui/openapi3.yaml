@@ -1,53 +1,26 @@
 components:
   requestBodies:
-    CompetitionCrawlRequest:
+    LeaderboardRequest:
       content:
         application/json:
           schema:
             properties:
-              competitionID:
+              compId:
+                minLength: 1
+                type: string
+              compName:
                 minLength: 1
                 type: string
               date:
-                format: date-time
-                type: string
-      description: Request used for crawling data by date
-      required: true
-    CompetitionRequest:
-      content:
-        application/json:
-          schema:
-            properties:
-              competitionID:
-                minLength: 1
-                type: string
-              competitionName:
-                minLength: 1
-                type: string
-              id:
                 minLength: 1
                 type: string
               source:
                 minLength: 1
                 type: string
-              table:
-                minLength: 1
-                type: string
-      description: Request used for fetching competition data
+      description: Request used for fetching leaderboard data
       required: true
   responses:
-    CompetitionCrawlResponse:
-      content:
-        application/json:
-          schema:
-            properties:
-              id:
-                nullable: true
-                type: string
-              message:
-                $ref: '#/components/schemas/Message'
-      description: Response returned back after creating tasks.
-    CompetitionResponse:
+    LeaderboardResponse:
       content:
         application/json:
           schema:
@@ -61,7 +34,7 @@ components:
               name:
                 type: string
               teams:
-                $ref: '#/components/schemas/TeamDataList'
+                $ref: '#/components/schemas/TeamLeaderboardDataList'
       description: Response with competition data
   schemas:
     ErrorLog:
@@ -83,28 +56,65 @@ components:
           type: string
       type: object
     ErrorLogs:
-      properties:
-        errLog:
-          $ref: '#/components/schemas/ErrorLog'
+      items:
+        $ref: '#/components/schemas/ErrorLog'
       type: array
     Message:
       properties:
-        errorLog:
-          $ref: '#/components/schemas/ErrorLogs'
-        message:
-          $ref: '#/components/schemas/Message'
-        name:
+        count:
           nullable: true
           type: string
-        teams:
-          $ref: '#/components/schemas/TeamDataList'
+        errorLog:
+          $ref: '#/components/schemas/ErrorLogs'
+        hostName:
+          nullable: true
+          type: string
+        status:
+          nullable: true
+          type: string
+        timeTaken:
+          nullable: true
+          type: string
       type: object
-    PSQLCompetitionData:
+    PSQLLeaderboardData:
       properties:
+        bonus_points:
+          nullable: true
+          type: string
+        bonus_points_losing:
+          nullable: true
+          type: string
+        bonus_points_try:
+          nullable: true
+          type: string
+        bye:
+          nullable: true
+          type: string
         comp_id:
           nullable: true
           type: string
-        compName:
+        comp_name:
+          nullable: true
+          type: string
+        draw_count:
+          nullable: true
+          type: string
+        games_played:
+          nullable: true
+          type: string
+        loss_count:
+          nullable: true
+          type: string
+        points:
+          nullable: true
+          type: string
+        points_against:
+          nullable: true
+          type: string
+        points_diff:
+          nullable: true
+          type: string
+        points_for:
           nullable: true
           type: string
         team_id:
@@ -113,33 +123,74 @@ components:
         team_name:
           nullable: true
           type: string
-      type: object
-    PSQLTeamData:
-      properties:
-        message:
-          $ref: '#/components/schemas/Message'
-        name:
+        tries_against:
           nullable: true
           type: string
-        team_id:
+        tries_for:
           nullable: true
           type: string
-        teams:
-          $ref: '#/components/schemas/TeamDataList'
+        win_count:
+          nullable: true
+          type: string
       type: object
-    TeamData:
+    PSQLLeaderboardDataList:
+      items:
+        $ref: '#/components/schemas/PSQLLeaderboardData'
+      type: array
+    TeamLeaderboardData:
       properties:
+        bonusPoints:
+          nullable: true
+          type: string
+        bonusPointsLosing:
+          nullable: true
+          type: string
+        bonusPointsTry:
+          nullable: true
+          type: string
+        bye:
+          nullable: true
+          type: string
+        drawCount:
+          nullable: true
+          type: string
+        gamesPlayed:
+          nullable: true
+          type: string
         id:
           nullable: true
           type: string
+        lossCount:
+          nullable: true
+          type: string
         name:
           nullable: true
           type: string
+        points:
+          nullable: true
+          type: string
+        pointsAgainst:
+          nullable: true
+          type: string
+        pointsDiff:
+          nullable: true
+          type: string
+        pointsFor:
+          nullable: true
+          type: string
+        triesAgainst:
+          nullable: true
+          type: string
+        triesFor:
+          nullable: true
+          type: string
+        winCount:
+          nullable: true
+          type: string
       type: object
-    TeamDataList:
-      properties:
-        teamData:
-          $ref: '#/components/schemas/TeamData'
+    TeamLeaderboardDataList:
+      items:
+        $ref: '#/components/schemas/TeamLeaderboardData'
       type: array
 info:
   contact:
@@ -152,18 +203,19 @@ info:
   version: 0.0.0
 openapi: 3.0.0
 paths:
-  /competition:
+  /leaderboard:
+    description: Leaderboard Data
     post:
-      operationId: GetCompetition
+      operationId: GetLeaderboardData
       requestBody:
-        $ref: '#/components/requestBodies/CompetitionRequest'
+        $ref: '#/components/requestBodies/LeaderboardRequest'
       responses:
         "201":
-          $ref: '#/components/responses/CompetitionResponse'
+          $ref: '#/components/responses/LeaderboardResponse'
         "400":
-          $ref: '#/components/responses/CompetitionResponse'
+          $ref: '#/components/responses/LeaderboardResponse'
         "500":
-          $ref: '#/components/responses/CompetitionResponse'
+          $ref: '#/components/responses/LeaderboardResponse'
 servers:
 - description: Local development
   url: http://0.0.0.0:6080

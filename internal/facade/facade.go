@@ -2,27 +2,27 @@ package facade
 
 import (
 	"context"
-	"github.com/calebtracey/rugby-data-api/external/models/request"
-	"github.com/calebtracey/rugby-data-api/external/models/response"
-	"github.com/calebtracey/rugby-data-api/internal/facade/sixnations"
+	"github.com/calebtracey/rugby-data-api/internal/facade/comp"
+	"github.com/calebtracey/rugby-models/request"
+	"github.com/calebtracey/rugby-models/response"
 	"strings"
 )
 
 const PSQLDatabaseSource = "psql_db"
 
-//go:generate mockgen -destination=mockFacade.go -package=facade . APIFacadeI
+//go:generate mockgen -destination=../mocks/mockApiFacade.go -package=mocks . APIFacadeI
 type APIFacadeI interface {
-	SixNationsResults(ctx context.Context, req request.CompetitionRequest) (resp response.CompetitionResponse)
+	GetCompetitionData(ctx context.Context, req request.LeaderboardRequest) (resp response.LeaderboardResponse)
 }
 
 type APIFacade struct {
-	SNDAO sixnations.FacadeI
+	CompService comp.FacadeI
 }
 
-func (s APIFacade) SixNationsResults(ctx context.Context, req request.CompetitionRequest) (resp response.CompetitionResponse) {
+func (s APIFacade) GetCompetitionData(ctx context.Context, req request.LeaderboardRequest) (resp response.LeaderboardResponse) {
 	//TODO add validation
 	if strings.EqualFold(req.Source, PSQLDatabaseSource) {
-		resp = s.SNDAO.SixNationsTeams(ctx)
+		resp = s.CompService.LeaderboardData(ctx, req.CompId)
 	}
 	return resp
 }

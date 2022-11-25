@@ -26,7 +26,7 @@ func main() {
 	handler := routes.Handler{Service: facade}
 	router := handler.InitializeRoutes()
 	routes.RegisterOpenAPI(router)
-	c := CorsHandler()
+	c := corsHandler()
 
 	log.Fatal(listenAndServe(Port, gziphandler.GzipHandler(c.Handler(router))))
 }

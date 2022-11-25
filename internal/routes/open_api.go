@@ -7,10 +7,10 @@ import (
 	"net/http"
 )
 
-//go:generate statik -src=/Users/calebtracey/Desktop/Code/rugby-data-api/swagger-ui
 //go:generate go run ../../cmd/openapi-gen/main.go -path ../../swagger-ui
 //go:generate oapi-codegen -package openapi3 -generate types  -o ../../pkg/openapi3/types.gen.go ../../swagger-ui/openapi3.yaml
 //go:generate oapi-codegen -package openapi3 -generate client -o ../../pkg/openapi3/client.gen.go ../../swagger-ui/openapi3.yaml
+//go:generate statik -src=/Users/calebtracey/Desktop/Code/rugby-data-api/swagger-ui
 
 // NewOpenAPI3 instantiates the OpenAPI specification for this service.
 func NewOpenAPI3() openapi3.T {
@@ -37,39 +37,90 @@ func NewOpenAPI3() openapi3.T {
 	}
 
 	swagger.Components.Schemas = openapi3.Schemas{
-		"PSQLCompetitionData": openapi3.NewSchemaRef("",
+		"PSQLLeaderboardData": openapi3.NewSchemaRef("",
 			openapi3.NewObjectSchema().
 				WithProperty("comp_id", openapi3.NewStringSchema().
 					WithNullable()).
-				WithProperty("compName", openapi3.NewStringSchema().
+				WithProperty("comp_name", openapi3.NewStringSchema().
 					WithNullable()).
 				WithProperty("team_id", openapi3.NewStringSchema().
 					WithNullable()).
 				WithProperty("team_name", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("games_played", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("win_count", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("draw_count", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("loss_count", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("bye", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("points_for", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("points_against", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("tries_for", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("tries_against", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("bonus_points_try", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("bonus_points_losing", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("bonus_points", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("points_diff", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("points", openapi3.NewStringSchema().
 					WithNullable())),
-		"TeamData": openapi3.NewSchemaRef("",
+		"PSQLLeaderboardDataList": openapi3.NewArraySchema().
+			WithItems(&openapi3.Schema{
+				Type: openapi3.TypeArray,
+				Items: &openapi3.SchemaRef{
+					Ref: "#/components/schemas/PSQLLeaderboardData",
+				}}).Items,
+		"TeamLeaderboardData": openapi3.NewSchemaRef("",
 			openapi3.NewObjectSchema().
 				WithProperty("id", openapi3.NewStringSchema().
 					WithNullable()).
 				WithProperty("name", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("gamesPlayed", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("winCount", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("drawCount", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("lossCount", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("bye", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("pointsFor", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("pointsAgainst", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("triesFor", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("triesAgainst", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("bonusPointsTry", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("bonusPointsLosing", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("bonusPoints", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("pointsDiff", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("points", openapi3.NewStringSchema().
 					WithNullable())),
-		"TeamDataList": openapi3.NewSchemaRef("",
-			openapi3.NewArraySchema().
-				WithPropertyRef("teamData", &openapi3.SchemaRef{
-					Ref: "#/components/schemas/TeamData",
-				})),
-		"PSQLTeamData": openapi3.NewSchemaRef("",
-			openapi3.NewObjectSchema().
-				WithProperty("team_id", openapi3.NewStringSchema().
-					WithNullable()).
-				WithProperty("name", openapi3.NewStringSchema().
-					WithNullable()).
-				WithPropertyRef("teams", &openapi3.SchemaRef{
-					Ref: "#/components/schemas/TeamDataList",
-				}).
-				WithPropertyRef("message", &openapi3.SchemaRef{
-					Ref: "#/components/schemas/Message",
-				})),
+		"TeamLeaderboardDataList": openapi3.NewArraySchema().
+			WithItems(&openapi3.Schema{
+				Type: openapi3.TypeArray,
+				Items: &openapi3.SchemaRef{
+					Ref: "#/components/schemas/TeamLeaderboardData",
+				}}).Items,
 		"ErrorLog": openapi3.NewSchemaRef("",
 			openapi3.NewObjectSchema().
 				WithProperty("scope", openapi3.NewStringSchema().
@@ -82,57 +133,48 @@ func NewOpenAPI3() openapi3.T {
 					WithNullable()).
 				WithProperty("query", openapi3.NewStringSchema().
 					WithNullable())),
-		"ErrorLogs": openapi3.NewSchemaRef("",
-			openapi3.NewArraySchema().
-				WithPropertyRef("errLog", &openapi3.SchemaRef{
+		"ErrorLogs": openapi3.NewArraySchema().
+			WithItems(&openapi3.Schema{
+				Type: openapi3.TypeArray,
+				Items: &openapi3.SchemaRef{
 					Ref: "#/components/schemas/ErrorLog",
-				})),
+				}}).Items,
 		"Message": openapi3.NewSchemaRef("",
 			openapi3.NewObjectSchema().
 				WithPropertyRef("errorLog", &openapi3.SchemaRef{
 					Ref: "#/components/schemas/ErrorLogs",
 				}).
-				WithProperty("name", openapi3.NewStringSchema().
+				WithProperty("hostName", openapi3.NewStringSchema().
 					WithNullable()).
-				WithPropertyRef("teams", &openapi3.SchemaRef{
-					Ref: "#/components/schemas/TeamDataList",
-				}).
-				WithPropertyRef("message", &openapi3.SchemaRef{
-					Ref: "#/components/schemas/Message",
-				})),
+				WithProperty("status", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("timeTaken", openapi3.NewStringSchema().
+					WithNullable()).
+				WithProperty("count", openapi3.NewStringSchema().
+					WithNullable())),
 	}
 
 	swagger.Components.RequestBodies = openapi3.RequestBodies{
-		"CompetitionRequest": &openapi3.RequestBodyRef{
+		"LeaderboardRequest": &openapi3.RequestBodyRef{
 			Value: openapi3.NewRequestBody().
-				WithDescription("Request used for fetching competition data").
+				WithDescription("Request used for fetching leaderboard data").
 				WithRequired(true).
 				WithJSONSchema(openapi3.NewSchema().
 					WithProperty("source", openapi3.NewStringSchema().
 						WithMinLength(1)).
-					WithProperty("competitionID", openapi3.NewStringSchema().
+					WithProperty("compId", openapi3.NewStringSchema().
 						WithMinLength(1)).
-					WithProperty("competitionName", openapi3.NewStringSchema().
-						WithMinLength(1)).
-					WithProperty("table", openapi3.NewStringSchema().
-						WithMinLength(1)).
-					WithProperty("id", openapi3.NewStringSchema().
-						WithMinLength(1))),
-		},
-		"CompetitionCrawlRequest": &openapi3.RequestBodyRef{
-			Value: openapi3.NewRequestBody().
-				WithDescription("Request used for crawling data by date").
-				WithRequired(true).
-				WithJSONSchema(openapi3.NewSchema().
-					WithProperty("competitionID", openapi3.NewStringSchema().
+					WithProperty("compName", openapi3.NewStringSchema().
 						WithMinLength(1)).
 					WithProperty("date", openapi3.NewStringSchema().
-						WithFormat("date-time"))),
+						WithMinLength(1)).
+					WithProperty("source", openapi3.NewStringSchema().
+						WithMinLength(1))),
 		},
 	}
 
 	swagger.Components.Responses = openapi3.Responses{
-		"CompetitionResponse": &openapi3.ResponseRef{
+		"LeaderboardResponse": &openapi3.ResponseRef{
 			Value: openapi3.NewResponse().
 				WithDescription("Response with competition data").
 				WithContent(openapi3.NewContentWithJSONSchema(openapi3.NewSchema().
@@ -141,7 +183,7 @@ func NewOpenAPI3() openapi3.T {
 					WithProperty("name", openapi3.NewStringSchema()).
 					WithNullable().
 					WithPropertyRef("teams", &openapi3.SchemaRef{
-						Ref: "#/components/schemas/TeamDataList",
+						Ref: "#/components/schemas/TeamLeaderboardDataList",
 					}).
 					WithNullable().
 					WithPropertyRef("message", &openapi3.SchemaRef{
@@ -149,34 +191,25 @@ func NewOpenAPI3() openapi3.T {
 					}).
 					WithNullable())),
 		},
-		"CompetitionCrawlResponse": &openapi3.ResponseRef{
-			Value: openapi3.NewResponse().
-				WithDescription("Response returned back after creating tasks.").
-				WithContent(openapi3.NewContentWithJSONSchema(openapi3.NewSchema().
-					WithProperty("id", openapi3.NewStringSchema().
-						WithNullable()).
-					WithPropertyRef("message", &openapi3.SchemaRef{
-						Ref: "#/components/schemas/Message",
-					}))),
-		},
 	}
 
 	swagger.Paths = openapi3.Paths{
-		"/competition": &openapi3.PathItem{
+		"/leaderboard": &openapi3.PathItem{
+			Description: "Leaderboard Data",
 			Post: &openapi3.Operation{
-				OperationID: "GetCompetition",
+				OperationID: "GetLeaderboardData",
 				RequestBody: &openapi3.RequestBodyRef{
-					Ref: "#/components/requestBodies/CompetitionRequest",
+					Ref: "#/components/requestBodies/LeaderboardRequest",
 				},
 				Responses: openapi3.Responses{
 					"400": &openapi3.ResponseRef{
-						Ref: "#/components/responses/CompetitionResponse",
+						Ref: "#/components/responses/LeaderboardResponse",
 					},
 					"500": &openapi3.ResponseRef{
-						Ref: "#/components/responses/CompetitionResponse",
+						Ref: "#/components/responses/LeaderboardResponse",
 					},
 					"201": &openapi3.ResponseRef{
-						Ref: "#/components/responses/CompetitionResponse",
+						Ref: "#/components/responses/LeaderboardResponse",
 					},
 				},
 			},
