@@ -52,15 +52,15 @@ func TestDAO_GetLeaderboardData(t *testing.T) {
 			mockCols: cols,
 			wantRes: models.PSQLLeaderboardDataList{
 				{
-					CompId:   "123",
+					CompId:   123,
 					CompName: "Test Comp",
-					TeamId:   "1",
+					TeamId:   1,
 					TeamName: "Team 1",
 				},
 				{
-					CompId:   "123",
+					CompId:   123,
 					CompName: "Test Comp",
-					TeamId:   "2",
+					TeamId:   2,
 					TeamName: "Team 2",
 				},
 			},
