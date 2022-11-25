@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	configPath = "local_config.yaml"
+	configPath = "dev_config.yaml"
 )
 
 const Port = "6080"
@@ -16,7 +16,6 @@ const Port = "6080"
 //go:generate swagger spec --output=../../openapi.yaml
 func main() {
 	defer panicQuit()
-	//log.Fatal(godotenv.Load())
 	appConfig := config.NewFromFile(configPath)
 	facade, err := initializeDAO(*appConfig)
 	if err != nil {
