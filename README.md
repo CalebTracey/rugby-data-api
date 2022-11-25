@@ -6,10 +6,6 @@
 
 [config-yaml](https://github.com/CalebTracey/config-yaml) used for environment configs and service/db initialization
 
-[rugby-models](https://github.com/CalebTracey/rugby-models) used for common data types
-
-[config-yaml](https://github.com/CalebTracey/config-yaml) used for environment configs and service/db initialization
-
 **Basic setup**
 1. Create a local Postgres database and update the config.yaml file with the details
 2. Update go.mod and file imports with your repo name
