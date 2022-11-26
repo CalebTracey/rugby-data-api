@@ -1,11 +1,11 @@
 on: [pull_request]
-name: Test
+name: Publish
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v3
         with:
-          go-version: v
+          go-version: 1.19.x
       - uses: actions/checkout@v3
       - run: go test ./...
