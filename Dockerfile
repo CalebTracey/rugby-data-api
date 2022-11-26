@@ -1,5 +1,7 @@
 FROM golang:1.19.2-alpine as builder
 
+ENV DB_PASSWORD_DEV e4wAgniFqC83W@#
+
 COPY . /app
 WORKDIR /app
 

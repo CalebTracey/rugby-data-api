@@ -1,4 +1,4 @@
-Env: "local"
+Env: "dev"
 Port: "6080"
 AppName: "rugby-data-api"
 ClientConfig:
