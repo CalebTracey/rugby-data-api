@@ -22,9 +22,9 @@ func initializeDAO(config config.Config) (facade.APIFacadeI, error) {
 				DbDAO: psql.DAO{
 					DB: psqlDbConfig.DB,
 				},
-				Mapper: comp.Mapper{},
+				DbMapper: psql.Mapper{},
 			},
-			CompMapper: comp.Mapper{},
+			DbMapper: psql.Mapper{},
 		},
 	}, nil
 }

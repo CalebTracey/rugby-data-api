@@ -7,7 +7,9 @@ import (
 	"github.com/sirupsen/logrus"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
+	"time"
 )
 
 func writeHeader(w http.ResponseWriter, code int) http.ResponseWriter {
@@ -42,6 +44,14 @@ func readBody(body io.ReadCloser) ([]byte, error) {
 		return nil, copyErr
 	}
 	return buf.Bytes(), nil
+}
+
+func setMessage(startTime time.Time, msg response.Message) (int, response.Message) {
+	status, _ := strconv.Atoi(msg.Status)
+	hn, _ := os.Hostname()
+	msg.HostName = hn
+	msg.TimeTaken = time.Since(startTime).String()
+	return status, msg
 }
 
 func errorLogs(errors []error, rootCause string, status int) response.ErrorLogs {

@@ -1,4 +1,4 @@
-package comp
+package psql
 
 import (
 	"database/sql"
@@ -10,22 +10,23 @@ import (
 	"strconv"
 )
 
-//go:generate mockgen -destination=../../mocks/compmocks/mockMapper.go -package=compmocks . MapperI
+//go:generate mockgen -destination=../../mocks/dbmocks/mockMapper.go -package=dbmocks . MapperI
 type MapperI interface {
-	CreatePSQLCompetitionQuery(teamId string) string
+	CreatePSQLLeaderboardByIdQuery(teamId string) string
 	MapPSQLRowsToLeaderboardData(rows *sql.Rows) (leaderboardData models.PSQLLeaderboardDataList)
 	MapPSQLLeaderboardDataToResponse(compId, compName string, leaderboardData models.PSQLLeaderboardDataList) (resp response.LeaderboardResponse)
+	MapPSQLAllLeaderboardDataToResponse(leaderboardDataList models.PSQLLeaderboardDataList) (resp response.AllLeaderboardsResponse)
 }
 
 type Mapper struct{}
 
-func (m Mapper) CreatePSQLCompetitionQuery(teamId string) string {
+func (m Mapper) CreatePSQLLeaderboardByIdQuery(teamId string) string {
 	teamIdInt, err := strconv.Atoi(teamId)
 	if err != nil {
 		log.Error(err)
 		return ""
 	}
-	return fmt.Sprintf(PSQLLeaderboardById, teamIdInt)
+	return fmt.Sprintf(LeaderboardByIdQuery, teamIdInt)
 }
 
 func (m Mapper) MapPSQLRowsToLeaderboardData(rows *sql.Rows) (leaderboardData models.PSQLLeaderboardDataList) {
@@ -36,6 +37,7 @@ func (m Mapper) MapPSQLRowsToLeaderboardData(rows *sql.Rows) (leaderboardData mo
 			&data.CompName,
 			&data.TeamId,
 			&data.TeamName,
+			&data.TeamAbbr,
 			&data.GamesPlayed,
 			&data.WinCount,
 			&data.DrawCount,
@@ -60,13 +62,12 @@ func (m Mapper) MapPSQLRowsToLeaderboardData(rows *sql.Rows) (leaderboardData mo
 	return leaderboardData
 }
 
-func (m Mapper) MapPSQLLeaderboardDataToResponse(compId, compName string, leaderboardData models.PSQLLeaderboardDataList) (resp response.LeaderboardResponse) {
-	resp.Id = compId
-	resp.Name = compName
-	for _, data := range leaderboardData {
-		resp.Teams = append(resp.Teams, dtos.TeamLeaderboardData{
-			Id:                strconv.Itoa(data.TeamId),
-			Name:              data.TeamName,
+func mapPSQLTeamData(data models.PSQLLeaderboardData) dtos.TeamLeaderboardData {
+	return dtos.TeamLeaderboardData{
+		Id:   strconv.Itoa(data.TeamId),
+		Name: data.TeamName,
+		Abbr: data.TeamAbbr,
+		CompetitionStats: dtos.TeamCompetitionStats{
 			GamesPlayed:       data.GamesPlayed,
 			WinCount:          data.WinCount,
 			DrawCount:         data.DrawCount,
@@ -81,13 +82,42 @@ func (m Mapper) MapPSQLLeaderboardDataToResponse(compId, compName string, leader
 			BonusPoints:       data.BonusPoints,
 			PointsDiff:        data.PointsDiff,
 			Points:            data.Points,
-		})
+		},
+	}
+}
+
+func (m Mapper) MapPSQLLeaderboardDataToResponse(compId, compName string, leaderboardData models.PSQLLeaderboardDataList) (resp response.LeaderboardResponse) {
+	resp.LeaderboardData.CompId = compId
+	resp.LeaderboardData.CompName = compName
+	for _, data := range leaderboardData {
+		resp.LeaderboardData.Teams = append(resp.LeaderboardData.Teams, mapPSQLTeamData(data))
+	}
+	return resp
+}
+
+func (m Mapper) MapPSQLAllLeaderboardDataToResponse(leaderboardDataList models.PSQLLeaderboardDataList) (resp response.AllLeaderboardsResponse) {
+	compDataMap := make(map[string]dtos.CompetitionLeaderboardData, CompetitionCount)
+	for _, data := range leaderboardDataList {
+		if comp, ok := compDataMap[data.CompName]; ok {
+			comp.Teams = append(comp.Teams, mapPSQLTeamData(data))
+			compDataMap[data.CompName] = comp
+		} else {
+			comp.CompId = strconv.Itoa(data.CompId)
+			comp.CompName = data.CompName
+			comp.Teams = dtos.TeamLeaderboardDataList{mapPSQLTeamData(data)}
+			compDataMap[data.CompName] = comp
+		}
+	}
+	for _, team := range compDataMap {
+		resp.LeaderboardDataList = append(resp.LeaderboardDataList, team)
 	}
 	return resp
 }
 
 const (
-	PSQLCompetitionByID = `with comp_teams as (
+	CompetitionCount = 6
+
+	CompetitionByID = `with comp_teams as (
 		select
 			c.comp_id,
 			c.name as comp_name,
@@ -101,5 +131,7 @@ const (
 			c.comp_id = '%v'
 	) select comp_id, comp_name, team_id, team_name from comp_teams;`
 
-	PSQLLeaderboardById = `select * from public.comp_leaderboard where comp_id = '%v'`
+	LeaderboardByIdQuery = `select * from public.comp_leaderboard where comp_id = '%v'`
+
+	AllLeaderboardsQuery = `select * from public.comp_leaderboard`
 )

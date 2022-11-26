@@ -36,6 +36,21 @@ func (m *MockDAOI) EXPECT() *MockDAOIMockRecorder {
 	return m.recorder
 }
 
+// GetAllLeaderboardData mocks base method.
+func (m *MockDAOI) GetAllLeaderboardData(arg0 context.Context) (models.PSQLLeaderboardDataList, *response.ErrorLog) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllLeaderboardData", arg0)
+	ret0, _ := ret[0].(models.PSQLLeaderboardDataList)
+	ret1, _ := ret[1].(*response.ErrorLog)
+	return ret0, ret1
+}
+
+// GetAllLeaderboardData indicates an expected call of GetAllLeaderboardData.
+func (mr *MockDAOIMockRecorder) GetAllLeaderboardData(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllLeaderboardData", reflect.TypeOf((*MockDAOI)(nil).GetAllLeaderboardData), arg0)
+}
+
 // GetLeaderboardData mocks base method.
 func (m *MockDAOI) GetLeaderboardData(arg0 context.Context, arg1 string) (models.PSQLLeaderboardDataList, *response.ErrorLog) {
 	m.ctrl.T.Helper()

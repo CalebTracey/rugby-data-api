@@ -37,9 +37,9 @@ func (m *MockAPIFacadeI) EXPECT() *MockAPIFacadeIMockRecorder {
 }
 
 // GetCompetitionData mocks base method.
-func (m *MockAPIFacadeI) GetCompetitionData(arg0 context.Context, arg1 request.LeaderboardRequest) response.LeaderboardResponse {
+func (m *MockAPIFacadeI) GetLeaderboardData(arg0 context.Context, arg1 request.LeaderboardRequest) response.LeaderboardResponse {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCompetitionData", arg0, arg1)
+	ret := m.ctrl.Call(m, "GetLeaderboardData", arg0, arg1)
 	ret0, _ := ret[0].(response.LeaderboardResponse)
 	return ret0
 }
@@ -47,5 +47,5 @@ func (m *MockAPIFacadeI) GetCompetitionData(arg0 context.Context, arg1 request.L
 // GetCompetitionData indicates an expected call of GetCompetitionData.
 func (mr *MockAPIFacadeIMockRecorder) GetCompetitionData(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompetitionData", reflect.TypeOf((*MockAPIFacadeI)(nil).GetCompetitionData), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLeaderboardData", reflect.TypeOf((*MockAPIFacadeI)(nil).GetLeaderboardData), arg0, arg1)
 }

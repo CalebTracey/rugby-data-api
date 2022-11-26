@@ -1,4 +1,4 @@
-package comp
+package psql
 
 import (
 	"fmt"
@@ -14,14 +14,14 @@ func TestMapper_CreatePSQLCompetitionQuery(t *testing.T) {
 		{
 			name:   "Happy Path",
 			teamId: "123",
-			want:   fmt.Sprintf(PSQLLeaderboardById, 123),
+			want:   fmt.Sprintf(LeaderboardByIdQuery, 123),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := Mapper{}
-			if got := m.CreatePSQLCompetitionQuery(tt.teamId); got != tt.want {
-				t.Errorf("CreatePSQLCompetitionQuery() = %v, want %v", got, tt.want)
+			if got := m.CreatePSQLLeaderboardByIdQuery(tt.teamId); got != tt.want {
+				t.Errorf("CreatePSQLLeaderboardByIdQuery() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -43,7 +43,7 @@ func TestMapper_CreatePSQLCompetitionQuery(t *testing.T) {
 //	}
 //	for _, tt := range tests {
 //		t.Run(tt.name, func(t *testing.T) {
-//			m := Mapper{}
+//			m := DbMapper{}
 //			if gotSixNationsData := m.MapPSQLRowsToLeaderboardData(tt.rows); !reflect.DeepEqual(gotSixNationsData, tt.wantSixNationsData) {
 //				t.Errorf("MapPSQLRowsToLeaderboardData() = %v, want %v", gotSixNationsData, tt.wantSixNationsData)
 //			}

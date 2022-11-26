@@ -24,6 +24,7 @@ func (h *Handler) InitializeRoutes() *mux.Router {
 
 	r.Handle("/health", h.HealthCheck()).Methods(http.MethodGet)
 	r.Handle("/leaderboard", h.LeaderboardHandler()).Methods(http.MethodPost)
+	r.Handle("/leaderboards", h.AllLeaderboardsHandler()).Methods(http.MethodGet)
 
 	staticFs, err := fs.New()
 	if err != nil {
@@ -62,7 +63,21 @@ func (h *Handler) LeaderboardHandler() http.HandlerFunc {
 			return
 		}
 
-		compResponse = h.Service.GetCompetitionData(r.Context(), compRequest)
+		compResponse = h.Service.GetLeaderboardData(r.Context(), compRequest)
+	}
+}
+
+func (h *Handler) AllLeaderboardsHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		startTime := time.Now()
+		var status int
+		var leaderboardResponse response.AllLeaderboardsResponse
+		defer func() {
+			status, leaderboardResponse.Message = setMessage(startTime, leaderboardResponse.Message)
+			_ = json.NewEncoder(writeHeader(w, status)).Encode(leaderboardResponse)
+		}()
+
+		leaderboardResponse = h.Service.GetAllLeaderboardData(r.Context())
 	}
 }
 
