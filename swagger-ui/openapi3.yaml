@@ -219,3 +219,5 @@ paths:
 servers:
 - description: Local development
   url: http://0.0.0.0:6080
+- description: Develop environment
+  url: https://rugby-data-api-3ofjgnvkgq-uk.a.run.app:6080
