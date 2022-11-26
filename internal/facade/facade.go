@@ -12,17 +12,25 @@ const PSQLDatabaseSource = "rugby_db"
 
 //go:generate mockgen -destination=../mocks/mockApiFacade.go -package=mocks . APIFacadeI
 type APIFacadeI interface {
-	GetCompetitionData(ctx context.Context, req request.LeaderboardRequest) (resp response.LeaderboardResponse)
+	GetLeaderboardData(ctx context.Context, req request.LeaderboardRequest) (resp response.LeaderboardResponse)
+	GetAllLeaderboardData(ctx context.Context) (resp response.AllLeaderboardsResponse)
 }
 
 type APIFacade struct {
 	CompService comp.FacadeI
 }
 
-func (s APIFacade) GetCompetitionData(ctx context.Context, req request.LeaderboardRequest) (resp response.LeaderboardResponse) {
+func (s APIFacade) GetLeaderboardData(ctx context.Context, req request.LeaderboardRequest) (resp response.LeaderboardResponse) {
 	//TODO add validation
 	if strings.EqualFold(req.Source, PSQLDatabaseSource) {
 		resp = s.CompService.LeaderboardData(ctx, req.CompName)
 	}
+	return resp
+}
+
+func (s APIFacade) GetAllLeaderboardData(ctx context.Context) (resp response.AllLeaderboardsResponse) {
+	//TODO add validation
+	resp = s.CompService.AllLeaderboardData(ctx)
+
 	return resp
 }

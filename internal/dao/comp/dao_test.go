@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
-	"github.com/calebtracey/rugby-data-api/internal/mocks/compmocks"
 	"github.com/calebtracey/rugby-data-api/internal/mocks/dbmocks"
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
 	"github.com/calebtracey/rugby-models/pkg/models"
@@ -20,12 +19,12 @@ func TestDAO_GetLeaderboardData(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockDao := dbmocks.NewMockDAOI(ctrl)
-	mockMapper := compmocks.NewMockMapperI(ctrl)
+	mockMapper := dbmocks.NewMockMapperI(ctrl)
 	cols := []string{"comp_id", "comp_name", "team_id", "team_name"}
 
 	type fields struct {
-		DbDAO  psql.DAOI
-		Mapper MapperI
+		DbDAO    psql.DAOI
+		DbMapper psql.MapperI
 	}
 	type args struct {
 		ctx   context.Context
@@ -42,12 +41,12 @@ func TestDAO_GetLeaderboardData(t *testing.T) {
 		{
 			name: "Happy Path",
 			fields: fields{
-				DbDAO:  mockDao,
-				Mapper: mockMapper,
+				DbDAO:    mockDao,
+				DbMapper: mockMapper,
 			},
 			args: args{
 				ctx:   context.Background(),
-				query: fmt.Sprintf(PSQLCompetitionByID, "123"),
+				query: fmt.Sprintf(psql.CompetitionByID, "123"),
 			},
 			mockCols: cols,
 			wantRes: models.PSQLLeaderboardDataList{
@@ -70,8 +69,8 @@ func TestDAO_GetLeaderboardData(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := DAO{
-				DbDAO:  tt.fields.DbDAO,
-				Mapper: tt.fields.Mapper,
+				DbDAO:    tt.fields.DbDAO,
+				DbMapper: tt.fields.DbMapper,
 			}
 			rows := sqlmock.NewRows(tt.mockCols).
 				AddRow(123, "Test Comp", 1, "Team 1").

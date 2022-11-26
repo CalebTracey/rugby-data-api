@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	configPath = "config.yaml"
+	configPath = "local_config.yaml"
 )
 
 const Port = "6080"

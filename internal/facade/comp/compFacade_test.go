@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/calebtracey/rugby-data-api/internal/dao/comp"
+	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
 	"github.com/calebtracey/rugby-data-api/internal/mocks/compmocks"
+	"github.com/calebtracey/rugby-data-api/internal/mocks/dbmocks"
 	"github.com/calebtracey/rugby-models/pkg/dtos"
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
 	"github.com/calebtracey/rugby-models/pkg/models"
@@ -20,10 +22,10 @@ func TestFacade_LeaderboardData(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockCompDao := compmocks.NewMockDAOI(ctrl)
-	mockCompMapper := compmocks.NewMockMapperI(ctrl)
+	mockCompMapper := dbmocks.NewMockMapperI(ctrl)
 	type fields struct {
-		CompDAO    comp.DAOI
-		CompMapper comp.MapperI
+		CompDAO  comp.DAOI
+		DbMapper psql.MapperI
 	}
 	type args struct {
 		ctx      context.Context
@@ -41,8 +43,8 @@ func TestFacade_LeaderboardData(t *testing.T) {
 		{
 			name: "Happy Path",
 			fields: fields{
-				CompDAO:    mockCompDao,
-				CompMapper: mockCompMapper,
+				CompDAO:  mockCompDao,
+				DbMapper: mockCompMapper,
 			},
 			args: args{
 				ctx:      context.Background(),
@@ -65,16 +67,18 @@ func TestFacade_LeaderboardData(t *testing.T) {
 				},
 			},
 			wantResp: response.LeaderboardResponse{
-				Id:   "180659",
-				Name: "six nations",
-				Teams: dtos.TeamLeaderboardDataList{
-					{
-						Id:   "1",
-						Name: "Team 1",
-					},
-					{
-						Id:   "2",
-						Name: "Team 2",
+				LeaderboardData: dtos.CompetitionLeaderboardData{
+					CompId:   "180659",
+					CompName: "Six Nations",
+					Teams: dtos.TeamLeaderboardDataList{
+						{
+							Id:   "1",
+							Name: "Team 1",
+						},
+						{
+							Id:   "2",
+							Name: "Team 2",
+						},
 					},
 				},
 				Message: response.Message{},
@@ -84,11 +88,11 @@ func TestFacade_LeaderboardData(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := Facade{
-				CompDAO:    tt.fields.CompDAO,
-				CompMapper: tt.fields.CompMapper,
+				CompDAO:  tt.fields.CompDAO,
+				DbMapper: tt.fields.DbMapper,
 			}
-			query := fmt.Sprintf(comp.PSQLLeaderboardById, tt.wantCompId)
-			mockCompMapper.EXPECT().CreatePSQLCompetitionQuery(tt.wantCompId).Return(query)
+			query := fmt.Sprintf(psql.LeaderboardByIdQuery, tt.wantCompId)
+			mockCompMapper.EXPECT().CreatePSQLLeaderboardByIdQuery(tt.wantCompId).Return(query)
 			mockCompDao.EXPECT().GetLeaderboardData(tt.args.ctx, query).
 				DoAndReturn(func(ctx context.Context, query string) (models.PSQLLeaderboardDataList, *response.ErrorLog) {
 					if tt.expectCompError {
