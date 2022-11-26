@@ -1,4 +1,6 @@
-on: [pull_request]
+on:
+  push:
+    branches: ['main']
 name: Push Image
 jobs:
   push-image:
