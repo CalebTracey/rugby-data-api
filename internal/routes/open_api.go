@@ -33,6 +33,10 @@ func NewOpenAPI3() openapi3.T {
 				Description: "Local development",
 				URL:         "http://0.0.0.0:6080",
 			},
+			&openapi3.Server{
+				Description: "Develop environment",
+				URL:         "https://rugby-data-api-3ofjgnvkgq-uk.a.run.app:6080",
+			},
 		},
 	}
 
