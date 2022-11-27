@@ -1,6 +1,7 @@
 package psql
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/calebtracey/rugby-models/pkg/dtos"
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
@@ -12,7 +13,7 @@ import (
 //go:generate mockgen -destination=../../mocks/dbmocks/mockMapper.go -package=dbmocks . MapperI
 type MapperI interface {
 	CreatePSQLLeaderboardByIdQuery(teamId string) string
-	MapPSQLRowsToLeaderboardData(scanner models.RowsScannerI) (leaderboardData models.PSQLLeaderboardDataList, errorLog *response.ErrorLog)
+	MapPSQLRowsToLeaderboardData(rows *sql.Rows) (leaderboardData models.PSQLLeaderboardDataList, errorLog *response.ErrorLog)
 	MapPSQLLeaderboardDataToResponse(compId, compName string, leaderboardData models.PSQLLeaderboardDataList) (resp response.LeaderboardResponse)
 	MapPSQLAllLeaderboardDataToResponse(leaderboardDataList models.PSQLLeaderboardDataList) (resp response.AllLeaderboardsResponse)
 }
@@ -28,10 +29,10 @@ func (m Mapper) CreatePSQLLeaderboardByIdQuery(teamId string) string {
 	return fmt.Sprintf(LeaderboardByIdQuery, teamIdInt)
 }
 
-func (m Mapper) MapPSQLRowsToLeaderboardData(scanner models.RowsScannerI) (leaderboardData models.PSQLLeaderboardDataList, errorLog *response.ErrorLog) {
+func (m Mapper) MapPSQLRowsToLeaderboardData(rows *sql.Rows) (leaderboardData models.PSQLLeaderboardDataList, errorLog *response.ErrorLog) {
 	var data models.PSQLLeaderboardData
-	for scanner.Next() {
-		if err := scanner.Scan(
+	for rows.Next() {
+		if err := rows.Scan(
 			&data.CompId,
 			&data.CompName,
 			&data.TeamId,

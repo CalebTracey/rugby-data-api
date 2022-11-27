@@ -65,12 +65,6 @@ func TestMapper_MapPSQLRowsToLeaderboardData(t *testing.T) {
 	mockRows := sqlmock.NewRows(mockCols).
 		AddRow(123, "Test Comp", 1, "Team 1", "T1", "2", "2", "2", "2", "2", "2", "2", "6", "23", "51", "3", "4", "5", "15").
 		AddRow(123, "Test Comp", 2, "Team 2", "T2", "2", "2", "2", "2", "2", "2", "2", "6", "23", "51", "3", "4", "5", "15")
-	//mockRows := sqlmock.NewRows([]string{"comp_id", "comp_name", "team_id", "team_name"}).
-	//	AddRow(123, "Test Comp", 1, "Team 1").
-	//	AddRow(123, "Test Comp", 2, "Team 2")
-	mock.NewRows(mockCols).
-		AddRow(123, "Test Comp", 1, "Team 1", "T1", "2", "2", "2", "2", "2", "2", "2", "6", "23", "51", "3", "4", "5", "15").
-		AddRow(123, "Test Comp", 2, "Team 2", "T2", "2", "2", "2", "2", "2", "2", "2", "6", "23", "51", "3", "4", "5", "15")
 
 	tests := []struct {
 		name                string
