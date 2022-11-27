@@ -38,8 +38,9 @@ func (s DAO) FindAll(ctx context.Context, query string) (rows *sql.Rows, err *re
 }
 
 func mapError(err error, query string) (errLog *response.ErrorLog) {
-	errLog = &response.ErrorLog{
-		Query: query,
+	errLog = &response.ErrorLog{}
+	if query != "" {
+		errLog.Query = query
 	}
 	if err == sql.ErrNoRows {
 		errLog.RootCause = "Not found in database"

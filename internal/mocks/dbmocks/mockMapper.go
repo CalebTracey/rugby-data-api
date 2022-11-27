@@ -5,7 +5,6 @@
 package dbmocks
 
 import (
-	sql "database/sql"
 	reflect "reflect"
 
 	response "github.com/calebtracey/rugby-models/pkg/dtos/response"
@@ -79,11 +78,12 @@ func (mr *MockMapperIMockRecorder) MapPSQLLeaderboardDataToResponse(arg0, arg1, 
 }
 
 // MapPSQLRowsToLeaderboardData mocks base method.
-func (m *MockMapperI) MapPSQLRowsToLeaderboardData(arg0 *sql.Rows) models.PSQLLeaderboardDataList {
+func (m *MockMapperI) MapPSQLRowsToLeaderboardData(arg0 models.RowsScannerI) (models.PSQLLeaderboardDataList, *response.ErrorLog) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "MapPSQLRowsToLeaderboardData", arg0)
 	ret0, _ := ret[0].(models.PSQLLeaderboardDataList)
-	return ret0
+	ret1, _ := ret[1].(*response.ErrorLog)
+	return ret0, ret1
 }
 
 // MapPSQLRowsToLeaderboardData indicates an expected call of MapPSQLRowsToLeaderboardData.
