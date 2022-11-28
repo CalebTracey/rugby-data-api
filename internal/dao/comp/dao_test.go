@@ -2,6 +2,7 @@ package comp
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
@@ -10,18 +11,17 @@ import (
 	"github.com/calebtracey/rugby-models/pkg/models"
 	"github.com/golang/mock/gomock"
 	"reflect"
-	"regexp"
 	"testing"
 )
 
 func TestDAO_GetLeaderboardData(t *testing.T) {
-	_, mock, _ := sqlmock.New()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockDao := dbmocks.NewMockDAOI(ctrl)
 	mockMapper := dbmocks.NewMockMapperI(ctrl)
-	cols := []string{"comp_id", "comp_name", "team_id", "team_name"}
-
+	mockRows := sqlmock.NewRows([]string{"comp_id", "comp_name", "team_id", "team_name"}).
+		AddRow(123, "Test Comp", 1, "Team 1").
+		AddRow(123, "Test Comp", 2, "Team 2")
 	type fields struct {
 		DbDAO    psql.DAOI
 		DbMapper psql.MapperI
@@ -31,12 +31,15 @@ func TestDAO_GetLeaderboardData(t *testing.T) {
 		query string
 	}
 	tests := []struct {
-		name     string
-		fields   fields
-		args     args
-		mockCols []string
-		wantRes  models.PSQLLeaderboardDataList
-		wantErr  *response.ErrorLog
+		name          string
+		fields        fields
+		args          args
+		mockRows      *sqlmock.Rows
+		wantRes       models.PSQLLeaderboardDataList
+		wantErr       *response.ErrorLog
+		mockErr       error
+		wantMapErr    *response.ErrorLog
+		expectDbError bool
 	}{
 		{
 			name: "Happy Path",
@@ -48,7 +51,7 @@ func TestDAO_GetLeaderboardData(t *testing.T) {
 				ctx:   context.Background(),
 				query: fmt.Sprintf(psql.CompetitionByID, "123"),
 			},
-			mockCols: cols,
+			mockRows: mockRows,
 			wantRes: models.PSQLLeaderboardDataList{
 				{
 					CompId:   123,
@@ -63,7 +66,31 @@ func TestDAO_GetLeaderboardData(t *testing.T) {
 					TeamName: "Team 2",
 				},
 			},
-			wantErr: nil,
+			mockErr:       nil,
+			wantErr:       nil,
+			wantMapErr:    nil,
+			expectDbError: false,
+		},
+		{
+			name: "Sad Path - db error",
+			fields: fields{
+				DbDAO:    mockDao,
+				DbMapper: mockMapper,
+			},
+			args: args{
+				ctx:   context.Background(),
+				query: fmt.Sprintf(psql.LeaderboardByIdQuery, "123"),
+			},
+			mockRows: mockRows,
+			wantRes:  models.PSQLLeaderboardDataList(nil),
+			mockErr:  errors.New("db error"),
+			wantErr: &response.ErrorLog{
+				StatusCode: "500",
+				RootCause:  "db error",
+				Query:      fmt.Sprintf(psql.LeaderboardByIdQuery, "123"),
+			},
+			wantMapErr:    nil,
+			expectDbError: true,
 		},
 	}
 	for _, tt := range tests {
@@ -72,16 +99,16 @@ func TestDAO_GetLeaderboardData(t *testing.T) {
 				DbDAO:    tt.fields.DbDAO,
 				DbMapper: tt.fields.DbMapper,
 			}
-			rows := sqlmock.NewRows(tt.mockCols).
-				AddRow(123, "Test Comp", 1, "Team 1").
-				AddRow(123, "Test Comp", 2, "Team 2")
-			mock.ExpectBegin()
 			mockDao.EXPECT().FindAll(tt.args.ctx, tt.args.query).
 				DoAndReturn(func(ctx context.Context, query string) (*sqlmock.Rows, *response.ErrorLog) {
-					mock.ExpectQuery(regexp.QuoteMeta(tt.args.query)).WillReturnRows(rows)
-					return rows, nil
+					if tt.expectDbError {
+						return tt.mockRows, tt.wantErr
+					}
+					return tt.mockRows, nil
 				})
-			mockMapper.EXPECT().MapPSQLRowsToLeaderboardData(gomock.Any()).Return(tt.wantRes)
+			if !tt.expectDbError {
+				mockMapper.EXPECT().MapPSQLRowsToLeaderboardData(gomock.Any()).Return(tt.wantRes, tt.wantMapErr)
+			}
 			gotCompResponse, gotErr := s.GetLeaderboardData(tt.args.ctx, tt.args.query)
 			if !reflect.DeepEqual(gotCompResponse, tt.wantRes) {
 				t.Errorf("GetLeaderboardData() gotCompResponse = %v, want %v", gotCompResponse, tt.wantRes)
