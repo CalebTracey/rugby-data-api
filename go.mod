@@ -6,7 +6,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/calebtracey/config-yaml v1.0.5
-	github.com/calebtracey/rugby-models v1.0.2
+	github.com/calebtracey/rugby-models v1.0.3
 	github.com/getkin/kin-openapi v0.109.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-playground/locales v0.14.0
@@ -20,8 +20,6 @@ require (
 	golang.org/x/text v0.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
-
-replace github.com/calebtracey/rugby-models => /Users/calebtracey/Desktop/Code/rugby-models
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect
