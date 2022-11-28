@@ -7,7 +7,9 @@ import (
 	"github.com/calebtracey/rugby-data-api/internal/mocks/compmocks"
 	"github.com/calebtracey/rugby-data-api/internal/mocks/dbmocks"
 	"github.com/calebtracey/rugby-models/pkg/dtos"
-	"github.com/calebtracey/rugby-models/pkg/dtos/request"
+	lbReq "github.com/calebtracey/rugby-models/pkg/dtos/request/leaderboard"
+	lbRes "github.com/calebtracey/rugby-models/pkg/dtos/response/leaderboard"
+
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
 	"github.com/calebtracey/rugby-models/pkg/models"
 	"github.com/golang/mock/gomock"
@@ -26,14 +28,14 @@ func TestFacade_LeaderboardData(t *testing.T) {
 	}
 	type args struct {
 		ctx context.Context
-		req request.LeaderboardRequest
+		req lbReq.Request
 	}
 	tests := []struct {
 		name          string
 		fields        fields
 		args          args
 		query         string
-		wantResp      response.LeaderboardResponse
+		wantResp      lbRes.Response
 		wantMockResp  dtos.CompetitionLeaderboardData
 		mockDaoResp   models.PSQLLeaderboardDataList
 		wantCompId    string
@@ -47,7 +49,7 @@ func TestFacade_LeaderboardData(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: request.LeaderboardRequest{
+				req: lbReq.Request{
 					Competitions: dtos.CompetitionList{
 						{
 							Name: "six nations",
@@ -71,7 +73,7 @@ func TestFacade_LeaderboardData(t *testing.T) {
 					TeamName: "Team 2",
 				},
 			},
-			wantResp: response.LeaderboardResponse{
+			wantResp: lbRes.Response{
 				LeaderboardData: dtos.CompetitionLeaderboardDataList{
 					{
 						CompId:   "180659",
@@ -113,7 +115,7 @@ func TestFacade_LeaderboardData(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: request.LeaderboardRequest{
+				req: lbReq.Request{
 					Competitions: dtos.CompetitionList{
 						{
 							Name: "six nations",
@@ -123,7 +125,7 @@ func TestFacade_LeaderboardData(t *testing.T) {
 			},
 			wantCompId:    "180659",
 			expectDbError: true,
-			wantResp: response.LeaderboardResponse{
+			wantResp: lbRes.Response{
 				Message: response.Message{
 					ErrorLog: response.ErrorLogs{
 						{
@@ -178,7 +180,7 @@ func TestFacade_AllLeaderboardData(t *testing.T) {
 		fields        fields
 		ctx           context.Context
 		query         string
-		wantResp      response.LeaderboardResponse
+		wantResp      lbRes.Response
 		mockDaoResp   models.PSQLLeaderboardDataList
 		mockDaoErr    *response.ErrorLog
 		expectDbError bool
@@ -218,7 +220,7 @@ func TestFacade_AllLeaderboardData(t *testing.T) {
 				},
 			},
 			mockDaoErr: nil,
-			wantResp: response.LeaderboardResponse{
+			wantResp: lbRes.Response{
 				LeaderboardData: dtos.CompetitionLeaderboardDataList{
 					{
 						CompId:   SixNationsId,
@@ -260,7 +262,7 @@ func TestFacade_AllLeaderboardData(t *testing.T) {
 			ctx:           context.Background(),
 			expectDbError: true,
 			query:         psql.AllLeaderboardsQuery,
-			wantResp: response.LeaderboardResponse{
+			wantResp: lbRes.Response{
 				Message: response.Message{
 					ErrorLog: response.ErrorLogs{
 						{

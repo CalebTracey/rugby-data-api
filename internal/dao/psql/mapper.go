@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/calebtracey/rugby-models/pkg/dtos"
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
+	"github.com/calebtracey/rugby-models/pkg/dtos/response/leaderboard"
 	"github.com/calebtracey/rugby-models/pkg/models"
 	log "github.com/sirupsen/logrus"
 	"strconv"
@@ -15,7 +16,7 @@ type MapperI interface {
 	CreatePSQLLeaderboardByIdQuery(teamId string) string
 	MapPSQLRowsToLeaderboardData(rows *sql.Rows) (leaderboardData models.PSQLLeaderboardDataList, errorLog *response.ErrorLog)
 	MapPSQLLeaderboardDataToResponse(compId, compName string, leaderboardData models.PSQLLeaderboardDataList) (resp dtos.CompetitionLeaderboardData)
-	MapPSQLAllLeaderboardDataToResponse(leaderboardDataList models.PSQLLeaderboardDataList) (resp response.LeaderboardResponse)
+	MapPSQLAllLeaderboardDataToResponse(leaderboardDataList models.PSQLLeaderboardDataList) (resp leaderboard.Response)
 }
 
 type Mapper struct{}
@@ -96,7 +97,7 @@ func (m Mapper) MapPSQLLeaderboardDataToResponse(compId, compName string, leader
 	return resp
 }
 
-func (m Mapper) MapPSQLAllLeaderboardDataToResponse(leaderboardDataList models.PSQLLeaderboardDataList) (resp response.LeaderboardResponse) {
+func (m Mapper) MapPSQLAllLeaderboardDataToResponse(leaderboardDataList models.PSQLLeaderboardDataList) (resp leaderboard.Response) {
 	compDataMap := make(map[string]dtos.CompetitionLeaderboardData, CompetitionCount)
 	for _, data := range leaderboardDataList {
 		if comp, ok := compDataMap[data.CompName]; ok {

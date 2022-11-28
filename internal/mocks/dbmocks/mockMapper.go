@@ -10,6 +10,7 @@ import (
 
 	dtos "github.com/calebtracey/rugby-models/pkg/dtos"
 	response "github.com/calebtracey/rugby-models/pkg/dtos/response"
+	leaderboard "github.com/calebtracey/rugby-models/pkg/dtos/response/leaderboard"
 	models "github.com/calebtracey/rugby-models/pkg/models"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -52,10 +53,10 @@ func (mr *MockMapperIMockRecorder) CreatePSQLLeaderboardByIdQuery(arg0 interface
 }
 
 // MapPSQLAllLeaderboardDataToResponse mocks base method.
-func (m *MockMapperI) MapPSQLAllLeaderboardDataToResponse(arg0 models.PSQLLeaderboardDataList) response.LeaderboardResponse {
+func (m *MockMapperI) MapPSQLAllLeaderboardDataToResponse(arg0 models.PSQLLeaderboardDataList) leaderboard.Response {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "MapPSQLAllLeaderboardDataToResponse", arg0)
-	ret0, _ := ret[0].(response.LeaderboardResponse)
+	ret0, _ := ret[0].(leaderboard.Response)
 	return ret0
 }
 

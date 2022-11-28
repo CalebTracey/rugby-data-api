@@ -5,8 +5,9 @@ import (
 	"github.com/calebtracey/rugby-data-api/internal/dao/comp"
 	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
 	"github.com/calebtracey/rugby-models/pkg/dtos"
-	"github.com/calebtracey/rugby-models/pkg/dtos/request"
+	lbReq "github.com/calebtracey/rugby-models/pkg/dtos/request/leaderboard"
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
+	lbRes "github.com/calebtracey/rugby-models/pkg/dtos/response/leaderboard"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -14,8 +15,8 @@ import (
 
 //go:generate mockgen -destination=../../mocks/compmocks/mockFacade.go -package=compmocks . FacadeI
 type FacadeI interface {
-	LeaderboardData(ctx context.Context, req request.LeaderboardRequest) (resp response.LeaderboardResponse)
-	AllLeaderboardData(ctx context.Context) (resp response.LeaderboardResponse)
+	LeaderboardData(ctx context.Context, req lbReq.Request) (resp lbRes.Response)
+	AllLeaderboardData(ctx context.Context) (resp lbRes.Response)
 }
 
 type Facade struct {
@@ -23,7 +24,7 @@ type Facade struct {
 	DbMapper psql.MapperI
 }
 
-func (s Facade) LeaderboardData(ctx context.Context, req request.LeaderboardRequest) (resp response.LeaderboardResponse) {
+func (s Facade) LeaderboardData(ctx context.Context, req lbReq.Request) (resp lbRes.Response) {
 	var data dtos.CompetitionLeaderboardDataList
 	//TODO make this concurrent
 	for _, c := range req.Competitions {
@@ -32,7 +33,7 @@ func (s Facade) LeaderboardData(ctx context.Context, req request.LeaderboardRequ
 		leaderboardData, err := s.CompDAO.GetLeaderboardData(ctx, teamsQuery)
 		if err != nil {
 			log.Error(err)
-			return response.LeaderboardResponse{
+			return lbRes.Response{
 				Message: response.Message{
 					ErrorLog: response.ErrorLogs{
 						*err,
@@ -47,11 +48,11 @@ func (s Facade) LeaderboardData(ctx context.Context, req request.LeaderboardRequ
 	return resp
 }
 
-func (s Facade) AllLeaderboardData(ctx context.Context) (resp response.LeaderboardResponse) {
+func (s Facade) AllLeaderboardData(ctx context.Context) (resp lbRes.Response) {
 	leaderboardData, err := s.CompDAO.GetAllLeaderboardData(ctx)
 	if err != nil {
 		log.Error(err)
-		return response.LeaderboardResponse{
+		return lbRes.Response{
 			Message: response.Message{
 				ErrorLog: response.ErrorLogs{
 					*err,
