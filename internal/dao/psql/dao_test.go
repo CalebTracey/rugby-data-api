@@ -6,13 +6,19 @@ import (
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
+	log "github.com/sirupsen/logrus"
 	"reflect"
 	"testing"
 )
 
 func TestDAO_InsertOne(t *testing.T) {
 	db, mock, _ := sqlmock.New()
-
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}(db)
 	tests := []struct {
 		name      string
 		DB        *sql.DB

@@ -8,6 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	request "github.com/calebtracey/rugby-models/pkg/dtos/request"
 	response "github.com/calebtracey/rugby-models/pkg/dtos/response"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -35,8 +36,22 @@ func (m *MockFacadeI) EXPECT() *MockFacadeIMockRecorder {
 	return m.recorder
 }
 
+// AllLeaderboardData mocks base method.
+func (m *MockFacadeI) AllLeaderboardData(arg0 context.Context) response.LeaderboardResponse {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AllLeaderboardData", arg0)
+	ret0, _ := ret[0].(response.LeaderboardResponse)
+	return ret0
+}
+
+// AllLeaderboardData indicates an expected call of AllLeaderboardData.
+func (mr *MockFacadeIMockRecorder) AllLeaderboardData(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AllLeaderboardData", reflect.TypeOf((*MockFacadeI)(nil).AllLeaderboardData), arg0)
+}
+
 // LeaderboardData mocks base method.
-func (m *MockFacadeI) LeaderboardData(arg0 context.Context, arg1 string) response.LeaderboardResponse {
+func (m *MockFacadeI) LeaderboardData(arg0 context.Context, arg1 request.LeaderboardRequest) response.LeaderboardResponse {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "LeaderboardData", arg0, arg1)
 	ret0, _ := ret[0].(response.LeaderboardResponse)

@@ -8,6 +8,7 @@ import (
 	sql "database/sql"
 	reflect "reflect"
 
+	dtos "github.com/calebtracey/rugby-models/pkg/dtos"
 	response "github.com/calebtracey/rugby-models/pkg/dtos/response"
 	models "github.com/calebtracey/rugby-models/pkg/models"
 	gomock "github.com/golang/mock/gomock"
@@ -51,10 +52,10 @@ func (mr *MockMapperIMockRecorder) CreatePSQLLeaderboardByIdQuery(arg0 interface
 }
 
 // MapPSQLAllLeaderboardDataToResponse mocks base method.
-func (m *MockMapperI) MapPSQLAllLeaderboardDataToResponse(arg0 models.PSQLLeaderboardDataList) response.AllLeaderboardsResponse {
+func (m *MockMapperI) MapPSQLAllLeaderboardDataToResponse(arg0 models.PSQLLeaderboardDataList) response.LeaderboardResponse {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "MapPSQLAllLeaderboardDataToResponse", arg0)
-	ret0, _ := ret[0].(response.AllLeaderboardsResponse)
+	ret0, _ := ret[0].(response.LeaderboardResponse)
 	return ret0
 }
 
@@ -65,10 +66,10 @@ func (mr *MockMapperIMockRecorder) MapPSQLAllLeaderboardDataToResponse(arg0 inte
 }
 
 // MapPSQLLeaderboardDataToResponse mocks base method.
-func (m *MockMapperI) MapPSQLLeaderboardDataToResponse(arg0, arg1 string, arg2 models.PSQLLeaderboardDataList) response.LeaderboardResponse {
+func (m *MockMapperI) MapPSQLLeaderboardDataToResponse(arg0, arg1 string, arg2 models.PSQLLeaderboardDataList) dtos.CompetitionLeaderboardData {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "MapPSQLLeaderboardDataToResponse", arg0, arg1, arg2)
-	ret0, _ := ret[0].(response.LeaderboardResponse)
+	ret0, _ := ret[0].(dtos.CompetitionLeaderboardData)
 	return ret0
 }
 
@@ -79,11 +80,12 @@ func (mr *MockMapperIMockRecorder) MapPSQLLeaderboardDataToResponse(arg0, arg1, 
 }
 
 // MapPSQLRowsToLeaderboardData mocks base method.
-func (m *MockMapperI) MapPSQLRowsToLeaderboardData(arg0 *sql.Rows) models.PSQLLeaderboardDataList {
+func (m *MockMapperI) MapPSQLRowsToLeaderboardData(arg0 *sql.Rows) (models.PSQLLeaderboardDataList, *response.ErrorLog) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "MapPSQLRowsToLeaderboardData", arg0)
 	ret0, _ := ret[0].(models.PSQLLeaderboardDataList)
-	return ret0
+	ret1, _ := ret[1].(*response.ErrorLog)
+	return ret0, ret1
 }
 
 // MapPSQLRowsToLeaderboardData indicates an expected call of MapPSQLRowsToLeaderboardData.

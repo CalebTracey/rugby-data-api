@@ -23,8 +23,10 @@ func (s DAO) GetLeaderboardData(ctx context.Context, query string) (resp models.
 	if err != nil {
 		return resp, err
 	}
-	resp = s.DbMapper.MapPSQLRowsToLeaderboardData(rows)
-
+	resp, err = s.DbMapper.MapPSQLRowsToLeaderboardData(rows)
+	if err != nil {
+		return resp, err
+	}
 	return resp, nil
 }
 
@@ -33,7 +35,9 @@ func (s DAO) GetAllLeaderboardData(ctx context.Context) (resp models.PSQLLeaderb
 	if err != nil {
 		return resp, err
 	}
-	resp = s.DbMapper.MapPSQLRowsToLeaderboardData(rows)
-
+	resp, err = s.DbMapper.MapPSQLRowsToLeaderboardData(rows)
+	if err != nil {
+		return resp, err
+	}
 	return resp, nil
 }

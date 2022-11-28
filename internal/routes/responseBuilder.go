@@ -12,13 +12,6 @@ import (
 	"time"
 )
 
-func writeHeader(w http.ResponseWriter, code int) http.ResponseWriter {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.WriteHeader(code)
-	return w
-}
-
 func renderResponse(w http.ResponseWriter, res interface{}, status int) {
 	w.Header().Set("Content-Type", "application/json")
 

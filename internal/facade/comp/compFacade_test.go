@@ -2,14 +2,12 @@ package comp
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/calebtracey/rugby-data-api/internal/dao/comp"
 	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
 	"github.com/calebtracey/rugby-data-api/internal/mocks/compmocks"
 	"github.com/calebtracey/rugby-data-api/internal/mocks/dbmocks"
 	"github.com/calebtracey/rugby-models/pkg/dtos"
+	"github.com/calebtracey/rugby-models/pkg/dtos/request"
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
 	"github.com/calebtracey/rugby-models/pkg/models"
 	"github.com/golang/mock/gomock"
@@ -18,7 +16,6 @@ import (
 )
 
 func TestFacade_LeaderboardData(t *testing.T) {
-	_, mock, _ := sqlmock.New()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockCompDao := compmocks.NewMockDAOI(ctrl)
@@ -28,17 +25,19 @@ func TestFacade_LeaderboardData(t *testing.T) {
 		DbMapper psql.MapperI
 	}
 	type args struct {
-		ctx      context.Context
-		compName string
+		ctx context.Context
+		req request.LeaderboardRequest
 	}
 	tests := []struct {
-		name            string
-		fields          fields
-		args            args
-		wantResp        response.LeaderboardResponse
-		mockDaoResp     models.PSQLLeaderboardDataList
-		wantCompId      string
-		expectCompError bool
+		name          string
+		fields        fields
+		args          args
+		query         string
+		wantResp      response.LeaderboardResponse
+		wantMockResp  dtos.CompetitionLeaderboardData
+		mockDaoResp   models.PSQLLeaderboardDataList
+		wantCompId    string
+		expectDbError bool
 	}{
 		{
 			name: "Happy Path",
@@ -47,11 +46,17 @@ func TestFacade_LeaderboardData(t *testing.T) {
 				DbMapper: mockCompMapper,
 			},
 			args: args{
-				ctx:      context.Background(),
-				compName: "six nations",
+				ctx: context.Background(),
+				req: request.LeaderboardRequest{
+					Competitions: dtos.CompetitionList{
+						{
+							Name: "six nations",
+						},
+					},
+				},
 			},
-			wantCompId:      "180659",
-			expectCompError: false,
+			wantCompId:    "180659",
+			expectDbError: false,
 			mockDaoResp: models.PSQLLeaderboardDataList{
 				{
 					CompId:   180659,
@@ -67,21 +72,66 @@ func TestFacade_LeaderboardData(t *testing.T) {
 				},
 			},
 			wantResp: response.LeaderboardResponse{
-				LeaderboardData: dtos.CompetitionLeaderboardData{
-					CompId:   "180659",
-					CompName: "Six Nations",
-					Teams: dtos.TeamLeaderboardDataList{
-						{
-							Id:   "1",
-							Name: "Team 1",
-						},
-						{
-							Id:   "2",
-							Name: "Team 2",
+				LeaderboardData: dtos.CompetitionLeaderboardDataList{
+					{
+						CompId:   "180659",
+						CompName: "Six Nations",
+						Teams: dtos.TeamLeaderboardDataList{
+							{
+								Name: "Team 1",
+								Id:   "1",
+							},
+							{
+								Name: "Team 2",
+								Id:   "2",
+							},
 						},
 					},
 				},
 				Message: response.Message{},
+			},
+			wantMockResp: dtos.CompetitionLeaderboardData{
+				CompId:   "180659",
+				CompName: "Six Nations",
+				Teams: dtos.TeamLeaderboardDataList{
+					{
+						Id:   "1",
+						Name: "Team 1",
+					},
+					{
+						Id:   "2",
+						Name: "Team 2",
+					},
+				},
+			},
+		},
+		{
+			name: "Sad Path",
+			fields: fields{
+				CompDAO:  mockCompDao,
+				DbMapper: mockCompMapper,
+			},
+			args: args{
+				ctx: context.Background(),
+				req: request.LeaderboardRequest{
+					Competitions: dtos.CompetitionList{
+						{
+							Name: "six nations",
+						},
+					},
+				},
+			},
+			wantCompId:    "180659",
+			expectDbError: true,
+			wantResp: response.LeaderboardResponse{
+				Message: response.Message{
+					ErrorLog: response.ErrorLogs{
+						{
+							RootCause:  "db error",
+							StatusCode: "500",
+						},
+					},
+				},
 			},
 		},
 	}
@@ -91,26 +141,160 @@ func TestFacade_LeaderboardData(t *testing.T) {
 				CompDAO:  tt.fields.CompDAO,
 				DbMapper: tt.fields.DbMapper,
 			}
-			query := fmt.Sprintf(psql.LeaderboardByIdQuery, tt.wantCompId)
-			mockCompMapper.EXPECT().CreatePSQLLeaderboardByIdQuery(tt.wantCompId).Return(query)
-			mockCompDao.EXPECT().GetLeaderboardData(tt.args.ctx, query).
+			mockCompMapper.EXPECT().CreatePSQLLeaderboardByIdQuery(gomock.Any()).Return(tt.query)
+			mockCompDao.EXPECT().GetLeaderboardData(tt.args.ctx, gomock.Any()).
 				DoAndReturn(func(ctx context.Context, query string) (models.PSQLLeaderboardDataList, *response.ErrorLog) {
-					if tt.expectCompError {
-						mock.ExpectQuery(query).WillReturnError(errors.New("db error"))
+					if tt.expectDbError {
 						return models.PSQLLeaderboardDataList{}, &response.ErrorLog{
-							Query:      query,
+							Query:      tt.query,
 							RootCause:  "db error",
 							StatusCode: "500",
 						}
 					}
 					return tt.mockDaoResp, nil
 				})
-			if !tt.expectCompError {
+			if !tt.expectDbError {
 				mockCompMapper.EXPECT().MapPSQLLeaderboardDataToResponse(gomock.Any(), gomock.Any(), tt.mockDaoResp).
-					Return(tt.wantResp)
+					Return(tt.wantMockResp)
 			}
-			if gotResp := s.LeaderboardData(tt.args.ctx, tt.args.compName); !reflect.DeepEqual(gotResp, tt.wantResp) {
+			if gotResp := s.LeaderboardData(tt.args.ctx, tt.args.req); !reflect.DeepEqual(gotResp, tt.wantResp) {
 				t.Errorf("LeaderboardData() = %v, want %v", gotResp, tt.wantResp)
+			}
+		})
+	}
+}
+
+func TestFacade_AllLeaderboardData(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockCompDao := compmocks.NewMockDAOI(ctrl)
+	mockCompMapper := dbmocks.NewMockMapperI(ctrl)
+	type fields struct {
+		CompDAO  comp.DAOI
+		DbMapper psql.MapperI
+	}
+	tests := []struct {
+		name          string
+		fields        fields
+		ctx           context.Context
+		query         string
+		wantResp      response.LeaderboardResponse
+		mockDaoResp   models.PSQLLeaderboardDataList
+		mockDaoErr    *response.ErrorLog
+		expectDbError bool
+	}{
+		{
+			name: "Happy Path",
+			fields: fields{
+				CompDAO:  mockCompDao,
+				DbMapper: mockCompMapper,
+			},
+			ctx:           context.Background(),
+			expectDbError: false,
+			mockDaoResp: models.PSQLLeaderboardDataList{
+				{
+					CompId:   180659,
+					CompName: "Six Nations",
+					TeamId:   1,
+					TeamName: "Team 1",
+				},
+				{
+					CompId:   180659,
+					CompName: "Six Nations",
+					TeamId:   2,
+					TeamName: "Team 2",
+				},
+				{
+					CompId:   267979,
+					CompName: "Premiership",
+					TeamId:   3,
+					TeamName: "Team 3",
+				},
+				{
+					CompId:   267979,
+					CompName: "Premiership",
+					TeamId:   4,
+					TeamName: "Team 4",
+				},
+			},
+			mockDaoErr: nil,
+			wantResp: response.LeaderboardResponse{
+				LeaderboardData: dtos.CompetitionLeaderboardDataList{
+					{
+						CompId:   SixNationsId,
+						CompName: SixNations,
+						Teams: dtos.TeamLeaderboardDataList{
+							{
+								Id:   "1",
+								Name: "Team 1",
+							},
+							{
+								Id:   "2",
+								Name: "Team 2",
+							},
+						},
+					},
+					{
+						CompId:   PremiershipId,
+						CompName: Premiership,
+						Teams: dtos.TeamLeaderboardDataList{
+							{
+								Id:   "3",
+								Name: "Team 3",
+							},
+							{
+								Id:   "4",
+								Name: "Team 4",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Sad Path",
+			fields: fields{
+				CompDAO:  mockCompDao,
+				DbMapper: mockCompMapper,
+			},
+			ctx:           context.Background(),
+			expectDbError: true,
+			query:         psql.AllLeaderboardsQuery,
+			wantResp: response.LeaderboardResponse{
+				Message: response.Message{
+					ErrorLog: response.ErrorLogs{
+						{
+							Query:      psql.AllLeaderboardsQuery,
+							RootCause:  "db error",
+							StatusCode: "500",
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := Facade{
+				CompDAO:  tt.fields.CompDAO,
+				DbMapper: tt.fields.DbMapper,
+			}
+			mockCompDao.EXPECT().GetAllLeaderboardData(tt.ctx).
+				DoAndReturn(func(ctx context.Context) (models.PSQLLeaderboardDataList, *response.ErrorLog) {
+					if tt.expectDbError {
+						return models.PSQLLeaderboardDataList{}, &response.ErrorLog{
+							Query:      tt.query,
+							RootCause:  "db error",
+							StatusCode: "500",
+						}
+					}
+					return tt.mockDaoResp, nil
+				})
+			if !tt.expectDbError {
+				mockCompMapper.EXPECT().MapPSQLAllLeaderboardDataToResponse(tt.mockDaoResp).Return(tt.wantResp)
+			}
+			if gotResp := s.AllLeaderboardData(tt.ctx); !reflect.DeepEqual(gotResp, tt.wantResp) {
+				t.Errorf("AllLeaderboardData() = %v, want %v", gotResp, tt.wantResp)
 			}
 		})
 	}

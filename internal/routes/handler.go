@@ -10,8 +10,6 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/sirupsen/logrus"
 	"net/http"
-	"os"
-	"strconv"
 	"time"
 )
 
@@ -41,43 +39,43 @@ func (h *Handler) InitializeRoutes() *mux.Router {
 func (h *Handler) LeaderboardHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		startTime := time.Now()
-		var compResponse response.LeaderboardResponse
-		var compRequest request.LeaderboardRequest
-
-		defer func() {
-			status, _ := strconv.Atoi(compResponse.Message.Status)
-			hn, _ := os.Hostname()
-			compResponse.Message.HostName = hn
-			compResponse.Message.TimeTaken = time.Since(startTime).String()
-			_ = json.NewEncoder(writeHeader(w, status)).Encode(compResponse)
-		}()
+		var leaderboardRequest request.LeaderboardRequest
+		var leaderboardResponse response.LeaderboardResponse
 		body, bodyErr := readBody(r.Body)
-
 		if bodyErr != nil {
-			compResponse.Message.ErrorLog = errorLogs([]error{bodyErr}, "Unable to read psqlRequest body", http.StatusBadRequest)
+			leaderboardResponse.Message.ErrorLog = errorLogs([]error{bodyErr}, "Unable to read psqlRequest body", http.StatusBadRequest)
 			return
 		}
-		err := json.Unmarshal(body, &compRequest)
+		if err := leaderboardRequest.UnmarshalJson(body); err != nil {
+			leaderboardResponse.Message.ErrorLog = response.ErrorLogs{*err}
+			return
+		}
+		leaderboardResponse = h.Service.GetLeaderboardData(r.Context(), leaderboardRequest)
+		statusCode := leaderboardResponse.Message.ErrorLog.GetHTTPStatus(len(leaderboardResponse.LeaderboardData))
+		leaderboardResponse.Message.AddMessageDetails(startTime)
+		res, err := json.Marshal(&leaderboardResponse)
 		if err != nil {
-			compResponse.Message.ErrorLog = errorLogs([]error{err}, "Unable to parse psqlRequest", http.StatusBadRequest)
-			return
+			logrus.Errorf("failed to marshal response: %s", err.Error())
+			statusCode = http.StatusInternalServerError
 		}
-
-		compResponse = h.Service.GetLeaderboardData(r.Context(), compRequest)
+		response.WriteHeader(w, statusCode)
+		_, _ = w.Write(res)
 	}
 }
 
 func (h *Handler) AllLeaderboardsHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		startTime := time.Now()
-		var status int
-		var leaderboardResponse response.AllLeaderboardsResponse
-		defer func() {
-			status, leaderboardResponse.Message = setMessage(startTime, leaderboardResponse.Message)
-			_ = json.NewEncoder(writeHeader(w, status)).Encode(leaderboardResponse)
-		}()
-
-		leaderboardResponse = h.Service.GetAllLeaderboardData(r.Context())
+		leaderboardResponse := h.Service.GetAllLeaderboardData(r.Context())
+		statusCode := leaderboardResponse.Message.ErrorLog.GetHTTPStatus(len(leaderboardResponse.LeaderboardData))
+		leaderboardResponse.Message.AddMessageDetails(startTime)
+		res, err := json.Marshal(&leaderboardResponse)
+		if err != nil {
+			logrus.Errorf("failed to marshal response: %s", err.Error())
+			statusCode = http.StatusInternalServerError
+		}
+		response.WriteHeader(w, statusCode)
+		_, _ = w.Write(res)
 	}
 }
 
