@@ -4,28 +4,27 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/calebtracey/rugby-models/pkg/dtos/response"
-	log "github.com/sirupsen/logrus"
 	"reflect"
 	"testing"
 )
 
 func TestDAO_InsertOne(t *testing.T) {
 	db, mock, _ := sqlmock.New()
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-			log.Error(err)
-		}
-	}(db)
+	//defer func(db *sql.DB) {
+	//	err := db.Close()
+	//	if err != nil {
+	//		log.Error(err)
+	//	}
+	//}(db)
 	tests := []struct {
 		name      string
 		DB        *sql.DB
 		ctx       context.Context
 		exec      string
 		wantResp  sql.Result
-		wantErr   *response.ErrorLog
+		wantErr   error
 		mockErr   error
 		expectErr bool
 	}{
@@ -38,14 +37,11 @@ func TestDAO_InsertOne(t *testing.T) {
 			expectErr: false,
 		},
 		{
-			name: "Sad Path",
-			DB:   db,
-			ctx:  context.Background(),
-			exec: ``,
-			wantErr: &response.ErrorLog{
-				StatusCode: "500",
-				RootCause:  "error",
-			},
+			name:      "Sad Path",
+			DB:        db,
+			ctx:       context.Background(),
+			exec:      ``,
+			wantErr:   fmt.Errorf("error during leaderboard insert one: %w", errors.New("error")),
 			mockErr:   errors.New("error"),
 			expectErr: true,
 		},
@@ -57,10 +53,10 @@ func TestDAO_InsertOne(t *testing.T) {
 			}
 			if !tt.expectErr {
 				mock.ExpectExec(tt.exec).WillReturnResult(tt.wantResp)
+			} else {
+				mock.ExpectExec(tt.exec).WillReturnError(tt.mockErr)
 			}
-			if tt.expectErr {
-				mock.ExpectExec(tt.exec).WillReturnResult(tt.wantResp).WillReturnError(tt.mockErr)
-			}
+
 			_, gotErr := s.InsertOne(tt.ctx, tt.exec)
 			if !reflect.DeepEqual(gotErr, tt.wantErr) {
 				t.Errorf("InsertOne() gotErr = %v, want %v", gotErr, tt.wantErr)

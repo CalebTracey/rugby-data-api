@@ -9,8 +9,7 @@ import (
 	reflect "reflect"
 
 	dtos "github.com/calebtracey/rugby-models/pkg/dtos"
-	response "github.com/calebtracey/rugby-models/pkg/dtos/response"
-	leaderboard "github.com/calebtracey/rugby-models/pkg/dtos/response/leaderboard"
+	leaderboard "github.com/calebtracey/rugby-models/pkg/dtos/leaderboard"
 	models "github.com/calebtracey/rugby-models/pkg/models"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -38,59 +37,59 @@ func (m *MockMapperI) EXPECT() *MockMapperIMockRecorder {
 	return m.recorder
 }
 
-// CreatePSQLLeaderboardByIdQuery mocks base method.
-func (m *MockMapperI) CreatePSQLLeaderboardByIdQuery(arg0 string) string {
+// AllLeaderboardDataToResponse mocks base method.
+func (m *MockMapperI) AllLeaderboardDataToResponse(arg0 models.PSQLLeaderboardDataList) leaderboard.Response {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreatePSQLLeaderboardByIdQuery", arg0)
-	ret0, _ := ret[0].(string)
-	return ret0
-}
-
-// CreatePSQLLeaderboardByIdQuery indicates an expected call of CreatePSQLLeaderboardByIdQuery.
-func (mr *MockMapperIMockRecorder) CreatePSQLLeaderboardByIdQuery(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePSQLLeaderboardByIdQuery", reflect.TypeOf((*MockMapperI)(nil).CreatePSQLLeaderboardByIdQuery), arg0)
-}
-
-// MapPSQLAllLeaderboardDataToResponse mocks base method.
-func (m *MockMapperI) MapPSQLAllLeaderboardDataToResponse(arg0 models.PSQLLeaderboardDataList) leaderboard.Response {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MapPSQLAllLeaderboardDataToResponse", arg0)
+	ret := m.ctrl.Call(m, "AllLeaderboardDataToResponse", arg0)
 	ret0, _ := ret[0].(leaderboard.Response)
 	return ret0
 }
 
-// MapPSQLAllLeaderboardDataToResponse indicates an expected call of MapPSQLAllLeaderboardDataToResponse.
-func (mr *MockMapperIMockRecorder) MapPSQLAllLeaderboardDataToResponse(arg0 interface{}) *gomock.Call {
+// AllLeaderboardDataToResponse indicates an expected call of AllLeaderboardDataToResponse.
+func (mr *MockMapperIMockRecorder) AllLeaderboardDataToResponse(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MapPSQLAllLeaderboardDataToResponse", reflect.TypeOf((*MockMapperI)(nil).MapPSQLAllLeaderboardDataToResponse), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AllLeaderboardDataToResponse", reflect.TypeOf((*MockMapperI)(nil).AllLeaderboardDataToResponse), arg0)
 }
 
-// MapPSQLLeaderboardDataToResponse mocks base method.
-func (m *MockMapperI) MapPSQLLeaderboardDataToResponse(arg0, arg1 string, arg2 models.PSQLLeaderboardDataList) dtos.CompetitionLeaderboardData {
+// LeaderboardByIdQuery mocks base method.
+func (m *MockMapperI) LeaderboardByIdQuery(arg0 string) string {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MapPSQLLeaderboardDataToResponse", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "LeaderboardByIdQuery", arg0)
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// LeaderboardByIdQuery indicates an expected call of LeaderboardByIdQuery.
+func (mr *MockMapperIMockRecorder) LeaderboardByIdQuery(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LeaderboardByIdQuery", reflect.TypeOf((*MockMapperI)(nil).LeaderboardByIdQuery), arg0)
+}
+
+// LeaderboardDataToResponse mocks base method.
+func (m *MockMapperI) LeaderboardDataToResponse(arg0, arg1 string, arg2 models.PSQLLeaderboardDataList) dtos.CompetitionLeaderboardData {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LeaderboardDataToResponse", arg0, arg1, arg2)
 	ret0, _ := ret[0].(dtos.CompetitionLeaderboardData)
 	return ret0
 }
 
-// MapPSQLLeaderboardDataToResponse indicates an expected call of MapPSQLLeaderboardDataToResponse.
-func (mr *MockMapperIMockRecorder) MapPSQLLeaderboardDataToResponse(arg0, arg1, arg2 interface{}) *gomock.Call {
+// LeaderboardDataToResponse indicates an expected call of LeaderboardDataToResponse.
+func (mr *MockMapperIMockRecorder) LeaderboardDataToResponse(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MapPSQLLeaderboardDataToResponse", reflect.TypeOf((*MockMapperI)(nil).MapPSQLLeaderboardDataToResponse), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LeaderboardDataToResponse", reflect.TypeOf((*MockMapperI)(nil).LeaderboardDataToResponse), arg0, arg1, arg2)
 }
 
-// MapPSQLRowsToLeaderboardData mocks base method.
-func (m *MockMapperI) MapPSQLRowsToLeaderboardData(arg0 *sql.Rows) (models.PSQLLeaderboardDataList, *response.ErrorLog) {
+// RowsToLeaderboardData mocks base method.
+func (m *MockMapperI) RowsToLeaderboardData(arg0 *sql.Rows) (models.PSQLLeaderboardDataList, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MapPSQLRowsToLeaderboardData", arg0)
+	ret := m.ctrl.Call(m, "RowsToLeaderboardData", arg0)
 	ret0, _ := ret[0].(models.PSQLLeaderboardDataList)
-	ret1, _ := ret[1].(*response.ErrorLog)
+	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// MapPSQLRowsToLeaderboardData indicates an expected call of MapPSQLRowsToLeaderboardData.
-func (mr *MockMapperIMockRecorder) MapPSQLRowsToLeaderboardData(arg0 interface{}) *gomock.Call {
+// RowsToLeaderboardData indicates an expected call of RowsToLeaderboardData.
+func (mr *MockMapperIMockRecorder) RowsToLeaderboardData(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MapPSQLRowsToLeaderboardData", reflect.TypeOf((*MockMapperI)(nil).MapPSQLRowsToLeaderboardData), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RowsToLeaderboardData", reflect.TypeOf((*MockMapperI)(nil).RowsToLeaderboardData), arg0)
 }

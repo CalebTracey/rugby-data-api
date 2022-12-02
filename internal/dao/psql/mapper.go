@@ -4,8 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/calebtracey/rugby-models/pkg/dtos"
-	"github.com/calebtracey/rugby-models/pkg/dtos/response"
-	"github.com/calebtracey/rugby-models/pkg/dtos/response/leaderboard"
+	"github.com/calebtracey/rugby-models/pkg/dtos/leaderboard"
 	"github.com/calebtracey/rugby-models/pkg/models"
 	log "github.com/sirupsen/logrus"
 	"strconv"
@@ -13,27 +12,27 @@ import (
 
 //go:generate mockgen -destination=../../mocks/dbmocks/mockMapper.go -package=dbmocks . MapperI
 type MapperI interface {
-	CreatePSQLLeaderboardByIdQuery(teamId string) string
-	MapPSQLRowsToLeaderboardData(rows *sql.Rows) (leaderboardData models.PSQLLeaderboardDataList, errorLog *response.ErrorLog)
-	MapPSQLLeaderboardDataToResponse(compId, compName string, leaderboardData models.PSQLLeaderboardDataList) (resp dtos.CompetitionLeaderboardData)
-	MapPSQLAllLeaderboardDataToResponse(leaderboardDataList models.PSQLLeaderboardDataList) (resp leaderboard.Response)
+	LeaderboardByIdQuery(teamId string) string
+	RowsToLeaderboardData(rows *sql.Rows) (leaderboardData models.PSQLLeaderboardDataList, err error)
+	LeaderboardDataToResponse(compId, compName string, leaderboardData models.PSQLLeaderboardDataList) (resp dtos.CompetitionLeaderboardData)
+	AllLeaderboardDataToResponse(leaderboardDataList models.PSQLLeaderboardDataList) (resp leaderboard.Response)
 }
 
 type Mapper struct{}
 
-func (m Mapper) CreatePSQLLeaderboardByIdQuery(teamId string) string {
+func (m Mapper) LeaderboardByIdQuery(teamId string) string {
 	teamIdInt, err := strconv.Atoi(teamId)
 	if err != nil {
-		log.Error(err)
+		log.Errorf("error converting string: '%s' for leaderboard query; %v", teamId, err)
 		return ""
 	}
 	return fmt.Sprintf(LeaderboardByIdQuery, teamIdInt)
 }
 
-func (m Mapper) MapPSQLRowsToLeaderboardData(rows *sql.Rows) (leaderboardData models.PSQLLeaderboardDataList, errorLog *response.ErrorLog) {
+func (m Mapper) RowsToLeaderboardData(rows *sql.Rows) (leaderboardData models.PSQLLeaderboardDataList, err error) {
 	var data models.PSQLLeaderboardData
 	for rows.Next() {
-		if err := rows.Scan(
+		if err = rows.Scan(
 			&data.CompId,
 			&data.CompName,
 			&data.TeamId,
@@ -54,7 +53,7 @@ func (m Mapper) MapPSQLRowsToLeaderboardData(rows *sql.Rows) (leaderboardData mo
 			&data.PointsDiff,
 			&data.Points,
 		); err != nil {
-			return leaderboardData, mapError(err, "")
+			return leaderboardData, fmt.Errorf("error scanning leaderboard row: %w", err)
 		}
 
 		leaderboardData = append(leaderboardData, data)
@@ -87,7 +86,7 @@ func mapPSQLTeamData(data models.PSQLLeaderboardData) dtos.TeamLeaderboardData {
 	}
 }
 
-func (m Mapper) MapPSQLLeaderboardDataToResponse(compId, compName string, leaderboardData models.PSQLLeaderboardDataList) (resp dtos.CompetitionLeaderboardData) {
+func (m Mapper) LeaderboardDataToResponse(compId, compName string, leaderboardData models.PSQLLeaderboardDataList) (resp dtos.CompetitionLeaderboardData) {
 	resp.CompName = compName
 	resp.CompId = compId
 
@@ -97,7 +96,7 @@ func (m Mapper) MapPSQLLeaderboardDataToResponse(compId, compName string, leader
 	return resp
 }
 
-func (m Mapper) MapPSQLAllLeaderboardDataToResponse(leaderboardDataList models.PSQLLeaderboardDataList) (resp leaderboard.Response) {
+func (m Mapper) AllLeaderboardDataToResponse(leaderboardDataList models.PSQLLeaderboardDataList) (resp leaderboard.Response) {
 	compDataMap := make(map[string]dtos.CompetitionLeaderboardData, CompetitionCount)
 	for _, data := range leaderboardDataList {
 		if comp, ok := compDataMap[data.CompName]; ok {

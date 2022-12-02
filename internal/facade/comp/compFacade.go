@@ -2,21 +2,23 @@ package comp
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"github.com/calebtracey/rugby-data-api/internal/dao/comp"
 	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
 	"github.com/calebtracey/rugby-models/pkg/dtos"
-	lbReq "github.com/calebtracey/rugby-models/pkg/dtos/request/leaderboard"
+	"github.com/calebtracey/rugby-models/pkg/dtos/leaderboard"
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
-	lbRes "github.com/calebtracey/rugby-models/pkg/dtos/response/leaderboard"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
 
 //go:generate mockgen -destination=../../mocks/compmocks/mockFacade.go -package=compmocks . FacadeI
 type FacadeI interface {
-	LeaderboardData(ctx context.Context, req lbReq.Request) (resp lbRes.Response)
-	AllLeaderboardData(ctx context.Context) (resp lbRes.Response)
+	LeaderboardData(ctx context.Context, req leaderboard.Request) (resp leaderboard.Response)
+	AllLeaderboardData(ctx context.Context) (resp leaderboard.Response)
 }
 
 type Facade struct {
@@ -24,47 +26,69 @@ type Facade struct {
 	DbMapper psql.MapperI
 }
 
-func (s Facade) LeaderboardData(ctx context.Context, req lbReq.Request) (resp lbRes.Response) {
-	var data dtos.CompetitionLeaderboardDataList
-	//TODO make this concurrent
-	for _, c := range req.Competitions {
-		compName, compId := getCompId(c.Name)
-		teamsQuery := s.DbMapper.CreatePSQLLeaderboardByIdQuery(compId)
-		leaderboardData, err := s.CompDAO.GetLeaderboardData(ctx, teamsQuery)
-		if err != nil {
-			log.Error(err)
-			return lbRes.Response{
-				Message: response.Message{
-					ErrorLog: response.ErrorLogs{
-						*err,
-					},
-				},
+func (s Facade) LeaderboardData(ctx context.Context, req leaderboard.Request) (resp leaderboard.Response) {
+	g, ctx := errgroup.WithContext(ctx)
+	results := make([]dtos.CompetitionLeaderboardData, len(req.Competitions))
+
+	for i, competition := range req.Competitions {
+		i, competition := i, competition
+
+		compName, compId := compId(competition.Name)
+		teamsQuery := s.DbMapper.LeaderboardByIdQuery(compId)
+
+		g.Go(func() error {
+			leaderboardData, err := s.CompDAO.LeaderboardData(ctx, teamsQuery)
+
+			if err == nil {
+				compData := s.DbMapper.LeaderboardDataToResponse(compName, compId, leaderboardData)
+				results[i] = compData
 			}
-		}
-		compData := s.DbMapper.MapPSQLLeaderboardDataToResponse(compName, compId, leaderboardData)
-		data = append(data, compData)
+			return err
+		})
 	}
-	resp.LeaderboardData = data
+
+	if err := g.Wait(); err != nil {
+		resp.Message.ErrorLog = response.ErrorLogs{
+			*mapError(err, fmt.Sprintf("%s", req)),
+		}
+	}
+	resp.LeaderboardData = results
+
 	return resp
 }
 
-func (s Facade) AllLeaderboardData(ctx context.Context) (resp lbRes.Response) {
-	leaderboardData, err := s.CompDAO.GetAllLeaderboardData(ctx)
+func (s Facade) AllLeaderboardData(ctx context.Context) (resp leaderboard.Response) {
+	leaderboardData, err := s.CompDAO.AllLeaderboardData(ctx)
 	if err != nil {
-		log.Error(err)
-		return lbRes.Response{
-			Message: response.Message{
-				ErrorLog: response.ErrorLogs{
-					*err,
-				},
-			},
+		resp.Message.ErrorLog = response.ErrorLogs{
+			*mapError(err, "all leaderboard request"),
 		}
+		return resp
 	}
-	resp = s.DbMapper.MapPSQLAllLeaderboardDataToResponse(leaderboardData)
+	resp = s.DbMapper.AllLeaderboardDataToResponse(leaderboardData)
+
 	return resp
 }
 
-func getCompId(compName string) (string, string) {
+func mapError(err error, query string) (errLog *response.ErrorLog) {
+	log.Error(err)
+	errLog = &response.ErrorLog{
+		Query: query,
+	}
+	if err == sql.ErrNoRows {
+		errLog.RootCause = "Not found in database"
+		errLog.StatusCode = "404"
+		return errLog
+	}
+
+	if err != nil {
+		errLog.RootCause = err.Error()
+	}
+	errLog.StatusCode = "500"
+	return errLog
+}
+
+func compId(compName string) (string, string) {
 	c := cases.Title(language.English)
 	switch c.String(compName) {
 	case SixNations:
@@ -83,17 +107,6 @@ func getCompId(compName string) (string, string) {
 		return "", ""
 	}
 }
-
-var (
-	CompMap = map[string]string{
-		SixNations:              SixNationsId,
-		RugbyWorldCup:           RugbyWorldCupId,
-		Premiership:             PremiershipId,
-		Top14:                   Top14Id,
-		UnitedRugbyChampionship: UnitedRugbyChampionshipId,
-		RugbyChampionship:       RugbyChampionshipId,
-	}
-)
 
 const (
 	SixNations   = "Six Nations"

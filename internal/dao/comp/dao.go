@@ -3,14 +3,13 @@ package comp
 import (
 	"context"
 	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
-	"github.com/calebtracey/rugby-models/pkg/dtos/response"
 	"github.com/calebtracey/rugby-models/pkg/models"
 )
 
 //go:generate mockgen -destination=../../mocks/compmocks/mockDao.go -package=compmocks . DAOI
 type DAOI interface {
-	GetLeaderboardData(ctx context.Context, query string) (resp models.PSQLLeaderboardDataList, err *response.ErrorLog)
-	GetAllLeaderboardData(ctx context.Context) (resp models.PSQLLeaderboardDataList, err *response.ErrorLog)
+	LeaderboardData(ctx context.Context, query string) (resp models.PSQLLeaderboardDataList, err error)
+	AllLeaderboardData(ctx context.Context) (resp models.PSQLLeaderboardDataList, err error)
 }
 
 type DAO struct {
@@ -18,24 +17,24 @@ type DAO struct {
 	DbMapper psql.MapperI
 }
 
-func (s DAO) GetLeaderboardData(ctx context.Context, query string) (resp models.PSQLLeaderboardDataList, err *response.ErrorLog) {
+func (s DAO) LeaderboardData(ctx context.Context, query string) (resp models.PSQLLeaderboardDataList, err error) {
 	rows, err := s.DbDAO.FindAll(ctx, query)
 	if err != nil {
 		return resp, err
 	}
-	resp, err = s.DbMapper.MapPSQLRowsToLeaderboardData(rows)
+	resp, err = s.DbMapper.RowsToLeaderboardData(rows)
 	if err != nil {
 		return resp, err
 	}
 	return resp, nil
 }
 
-func (s DAO) GetAllLeaderboardData(ctx context.Context) (resp models.PSQLLeaderboardDataList, err *response.ErrorLog) {
+func (s DAO) AllLeaderboardData(ctx context.Context) (resp models.PSQLLeaderboardDataList, err error) {
 	rows, err := s.DbDAO.FindAll(ctx, psql.AllLeaderboardsQuery)
 	if err != nil {
 		return resp, err
 	}
-	resp, err = s.DbMapper.MapPSQLRowsToLeaderboardData(rows)
+	resp, err = s.DbMapper.RowsToLeaderboardData(rows)
 	if err != nil {
 		return resp, err
 	}

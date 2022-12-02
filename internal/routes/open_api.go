@@ -202,7 +202,7 @@ func NewOpenAPI3() openapi3.T {
 		"/leaderboard": &openapi3.PathItem{
 			Description: "Leaderboard Data",
 			Post: &openapi3.Operation{
-				OperationID: "GetLeaderboardData",
+				OperationID: "LeaderboardData",
 				RequestBody: &openapi3.RequestBodyRef{
 					Ref: "#/components/requestBodies/LeaderboardRequest",
 				},

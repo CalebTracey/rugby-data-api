@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	configPath = "config.yaml"
+	configPath = "local_config.yaml"
 )
 
 const Port = "6080"
@@ -19,7 +19,6 @@ func main() {
 	appConfig := config.NewFromFile(configPath)
 	facade, err := initializeDAO(*appConfig)
 	if err != nil {
-		log.Error(err)
 		panicQuit()
 	}
 	handler := routes.Handler{Service: facade}

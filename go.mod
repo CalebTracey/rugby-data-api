@@ -6,7 +6,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/calebtracey/config-yaml v1.0.5
-	github.com/calebtracey/rugby-models v1.0.4
+	github.com/calebtracey/rugby-models v1.0.6
 	github.com/getkin/kin-openapi v0.109.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/golang/mock v1.6.0
@@ -14,6 +14,7 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/rs/cors v1.8.2
 	github.com/sirupsen/logrus v1.9.0
+	golang.org/x/sync v0.1.0
 	golang.org/x/text v0.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )

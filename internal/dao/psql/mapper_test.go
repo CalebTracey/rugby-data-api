@@ -1,10 +1,8 @@
 package psql
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/calebtracey/rugby-models/pkg/dtos/response"
 	"github.com/calebtracey/rugby-models/pkg/models"
 	log "github.com/sirupsen/logrus"
 	"reflect"
@@ -26,8 +24,8 @@ func TestMapper_CreatePSQLCompetitionQuery(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := Mapper{}
-			if got := m.CreatePSQLLeaderboardByIdQuery(tt.teamId); got != tt.want {
-				t.Errorf("CreatePSQLLeaderboardByIdQuery() = %v, want %v", got, tt.want)
+			if got := m.LeaderboardByIdQuery(tt.teamId); got != tt.want {
+				t.Errorf("LeaderboardByIdQuery() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -37,12 +35,12 @@ var ()
 
 func TestMapper_MapPSQLRowsToLeaderboardData(t *testing.T) {
 	db, mock, _ := sqlmock.New()
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-			log.Error(err)
-		}
-	}(db)
+	//defer func(db *sql.DB) {
+	//	err := db.Close()
+	//	if err != nil {
+	//		log.Error(err)
+	//	}
+	//}(db)
 	mockCols := []string{"comp_id",
 		"comp_name",
 		"team_id",
@@ -69,7 +67,7 @@ func TestMapper_MapPSQLRowsToLeaderboardData(t *testing.T) {
 	tests := []struct {
 		name                string
 		wantLeaderboardData models.PSQLLeaderboardDataList
-		wantErrorLog        *response.ErrorLog
+		wantErrorLog        error
 	}{
 		{
 			name: "Happy Path",
@@ -128,12 +126,12 @@ func TestMapper_MapPSQLRowsToLeaderboardData(t *testing.T) {
 			if err != nil {
 				log.Error(err)
 			}
-			gotLeaderboardData, gotErrorLog := m.MapPSQLRowsToLeaderboardData(rows)
+			gotLeaderboardData, gotErrorLog := m.RowsToLeaderboardData(rows)
 			if !reflect.DeepEqual(gotLeaderboardData, tt.wantLeaderboardData) {
-				t.Errorf("MapPSQLRowsToLeaderboardData() gotLeaderboardData = %v, want %v", gotLeaderboardData, tt.wantLeaderboardData)
+				t.Errorf("RowsToLeaderboardData() gotLeaderboardData = %v, want %v", gotLeaderboardData, tt.wantLeaderboardData)
 			}
 			if !reflect.DeepEqual(gotErrorLog, tt.wantErrorLog) {
-				t.Errorf("MapPSQLRowsToLeaderboardData() gotErrorLog = %v, want %v", gotErrorLog, tt.wantErrorLog)
+				t.Errorf("RowsToLeaderboardData() gotErrorLog = %v, want %v", gotErrorLog, tt.wantErrorLog)
 			}
 		})
 	}

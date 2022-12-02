@@ -4,12 +4,11 @@ import (
 	"encoding/json"
 	"github.com/calebtracey/rugby-data-api/internal/facade"
 	_ "github.com/calebtracey/rugby-data-api/internal/routes/statik"
-	lbReq "github.com/calebtracey/rugby-models/pkg/dtos/request/leaderboard"
+	"github.com/calebtracey/rugby-models/pkg/dtos/leaderboard"
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
-	lbRes "github.com/calebtracey/rugby-models/pkg/dtos/response/leaderboard"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"time"
 )
@@ -40,19 +39,15 @@ func (h *Handler) InitializeRoutes() *mux.Router {
 func (h *Handler) LeaderboardHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		startTime := time.Now()
-		var leaderboardRequest lbReq.Request
-		var leaderboardResponse lbRes.Response
-		if err := leaderboardRequest.FromJSON(r.Body); err != nil {
-			leaderboardResponse.Message.ErrorLog = response.ErrorLogs{*err}
-		}
-		leaderboardResponse = h.Service.GetLeaderboardData(r.Context(), leaderboardRequest)
+		apiRequest := leaderboard.RequestFromJSON(r.Body)
+		apiResponse := h.Service.GetLeaderboardData(r.Context(), apiRequest)
 
-		if err := leaderboardResponse.ToJSON(w); err != nil {
-			logrus.Errorf("failed to marshal response: %s", err.RootCause)
-			leaderboardResponse.Message.ErrorLog = response.ErrorLogs{*err}
+		if err := apiResponse.ResponseToJSON(w); err != nil {
+			log.Errorf("failed to marshal response: %s", err.RootCause)
+			apiResponse.Message.ErrorLog = response.ErrorLogs{*err}
 		}
-		statusCode := leaderboardResponse.Message.ErrorLog.GetHTTPStatus(len(leaderboardResponse.LeaderboardData))
-		leaderboardResponse.Message.AddMessageDetails(startTime)
+		statusCode := apiResponse.Message.ErrorLog.GetHTTPStatus(len(apiResponse.LeaderboardData))
+		apiResponse.Message.AddMessageDetails(startTime)
 
 		response.WriteHeader(w, statusCode)
 	}
@@ -61,14 +56,14 @@ func (h *Handler) LeaderboardHandler() http.HandlerFunc {
 func (h *Handler) AllLeaderboardsHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		startTime := time.Now()
-		leaderboardResponse := h.Service.GetAllLeaderboardData(r.Context())
+		apiResponse := h.Service.GetAllLeaderboardData(r.Context())
 
-		if err := leaderboardResponse.ToJSON(w); err != nil {
-			logrus.Errorf("failed to marshal response: %s", err.RootCause)
-			leaderboardResponse.Message.ErrorLog = response.ErrorLogs{*err}
+		if err := apiResponse.ResponseToJSON(w); err != nil {
+			log.Errorf("failed to marshal response: %s", err.RootCause)
+			apiResponse.Message.ErrorLog = response.ErrorLogs{*err}
 		}
-		statusCode := leaderboardResponse.Message.ErrorLog.GetHTTPStatus(len(leaderboardResponse.LeaderboardData))
-		leaderboardResponse.Message.AddMessageDetails(startTime)
+		statusCode := apiResponse.Message.ErrorLog.GetHTTPStatus(len(apiResponse.LeaderboardData))
+		apiResponse.Message.AddMessageDetails(startTime)
 
 		response.WriteHeader(w, statusCode)
 	}
@@ -76,9 +71,8 @@ func (h *Handler) AllLeaderboardsHandler() http.HandlerFunc {
 
 func (h *Handler) HealthCheck() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := json.NewEncoder(w).Encode(map[string]bool{"ok": true})
-		if err != nil {
-			logrus.Errorln(err.Error())
+		if err := json.NewEncoder(w).Encode(map[string]bool{"ok": true}); err != nil {
+			log.Errorln(err.Error())
 			return
 		}
 	}
