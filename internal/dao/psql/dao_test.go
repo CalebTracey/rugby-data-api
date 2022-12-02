@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"reflect"
 	"testing"
@@ -40,7 +41,7 @@ func TestDAO_InsertOne(t *testing.T) {
 			DB:        db,
 			ctx:       context.Background(),
 			exec:      ``,
-			wantErr:   errors.New("error"),
+			wantErr:   fmt.Errorf("error during leaderboard insert one: %w", errors.New("error")),
 			mockErr:   errors.New("error"),
 			expectErr: true,
 		},
