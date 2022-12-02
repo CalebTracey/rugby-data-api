@@ -20,8 +20,7 @@ func (s DAO) InsertOne(ctx context.Context, exec string) (resp sql.Result, err e
 	resp, sqlErr := s.DB.ExecContext(ctx, exec)
 	if sqlErr != nil {
 		log.Error(sqlErr)
-		//err = mapError(sqlErr, exec)
-		return resp, err
+		return resp, sqlErr
 	}
 	return resp, nil
 }
@@ -30,8 +29,7 @@ func (s DAO) FindAll(ctx context.Context, query string) (rows *sql.Rows, err err
 	rows, sqlErr := s.DB.QueryContext(ctx, query)
 	if sqlErr != nil {
 		log.Error(sqlErr)
-		//err = mapError(sqlErr, query)
-		return rows, err
+		return rows, sqlErr
 	}
 	return rows, nil
 }

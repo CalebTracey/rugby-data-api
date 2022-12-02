@@ -62,6 +62,7 @@ func (s Facade) AllLeaderboardData(ctx context.Context) (resp leaderboard.Respon
 		resp.Message.ErrorLog = response.ErrorLogs{
 			*mapError(err, fmt.Sprintf("%s", "all leaderboard request")),
 		}
+		return resp
 	}
 	resp = s.DbMapper.AllLeaderboardDataToResponse(leaderboardData)
 

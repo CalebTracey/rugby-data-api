@@ -7,7 +7,6 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
 	"github.com/calebtracey/rugby-data-api/internal/mocks/dbmocks"
-	"github.com/calebtracey/rugby-models/pkg/dtos/response"
 	"github.com/calebtracey/rugby-models/pkg/models"
 	"github.com/golang/mock/gomock"
 	"reflect"
@@ -36,9 +35,9 @@ func TestDAO_GetLeaderboardData(t *testing.T) {
 		args          args
 		mockRows      *sqlmock.Rows
 		wantRes       models.PSQLLeaderboardDataList
-		wantErr       *response.ErrorLog
+		wantErr       error
 		mockErr       error
-		wantMapErr    *response.ErrorLog
+		wantMapErr    error
 		expectDbError bool
 	}{
 		{
@@ -81,14 +80,10 @@ func TestDAO_GetLeaderboardData(t *testing.T) {
 				ctx:   context.Background(),
 				query: fmt.Sprintf(psql.LeaderboardByIdQuery, "123"),
 			},
-			mockRows: mockRows,
-			wantRes:  models.PSQLLeaderboardDataList(nil),
-			mockErr:  errors.New("db error"),
-			wantErr: &response.ErrorLog{
-				StatusCode: "500",
-				RootCause:  "db error",
-				Query:      fmt.Sprintf(psql.LeaderboardByIdQuery, "123"),
-			},
+			mockRows:      mockRows,
+			wantRes:       models.PSQLLeaderboardDataList(nil),
+			mockErr:       errors.New("db error"),
+			wantErr:       errors.New("db error"),
 			wantMapErr:    nil,
 			expectDbError: true,
 		},
@@ -100,14 +95,14 @@ func TestDAO_GetLeaderboardData(t *testing.T) {
 				DbMapper: tt.fields.DbMapper,
 			}
 			mockDao.EXPECT().FindAll(tt.args.ctx, tt.args.query).
-				DoAndReturn(func(ctx context.Context, query string) (*sqlmock.Rows, *response.ErrorLog) {
+				DoAndReturn(func(ctx context.Context, query string) (*sqlmock.Rows, error) {
 					if tt.expectDbError {
 						return tt.mockRows, tt.wantErr
 					}
 					return tt.mockRows, nil
 				})
 			if !tt.expectDbError {
-				mockMapper.EXPECT().MapPSQLRowsToLeaderboardData(gomock.Any()).Return(tt.wantRes, tt.wantMapErr)
+				mockMapper.EXPECT().RowsToLeaderboardData(gomock.Any()).Return(tt.wantRes, tt.wantMapErr)
 			}
 			gotCompResponse, gotErr := s.LeaderboardData(tt.args.ctx, tt.args.query)
 			if !reflect.DeepEqual(gotCompResponse, tt.wantRes) {

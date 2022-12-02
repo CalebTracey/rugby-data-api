@@ -1,10 +1,8 @@
 package psql
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/calebtracey/rugby-models/pkg/dtos/response"
 	"github.com/calebtracey/rugby-models/pkg/models"
 	log "github.com/sirupsen/logrus"
 	"reflect"
@@ -37,12 +35,12 @@ var ()
 
 func TestMapper_MapPSQLRowsToLeaderboardData(t *testing.T) {
 	db, mock, _ := sqlmock.New()
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-			log.Error(err)
-		}
-	}(db)
+	//defer func(db *sql.DB) {
+	//	err := db.Close()
+	//	if err != nil {
+	//		log.Error(err)
+	//	}
+	//}(db)
 	mockCols := []string{"comp_id",
 		"comp_name",
 		"team_id",
@@ -69,7 +67,7 @@ func TestMapper_MapPSQLRowsToLeaderboardData(t *testing.T) {
 	tests := []struct {
 		name                string
 		wantLeaderboardData models.PSQLLeaderboardDataList
-		wantErrorLog        *response.ErrorLog
+		wantErrorLog        error
 	}{
 		{
 			name: "Happy Path",
