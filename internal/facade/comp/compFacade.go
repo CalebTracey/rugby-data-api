@@ -38,14 +38,15 @@ func (s Facade) LeaderboardData(ctx context.Context, req leaderboard.Request) (r
 
 		g.Go(func() error {
 			leaderboardData, err := s.CompDAO.LeaderboardData(ctx, teamsQuery)
+
 			if err == nil {
 				compData := s.DbMapper.LeaderboardDataToResponse(compName, compId, leaderboardData)
 				results[i] = compData
 			}
 			return err
 		})
-
 	}
+
 	if err := g.Wait(); err != nil {
 		resp.Message.ErrorLog = response.ErrorLogs{
 			*mapError(err, fmt.Sprintf("%s", req)),
@@ -106,17 +107,6 @@ func compId(compName string) (string, string) {
 		return "", ""
 	}
 }
-
-var (
-	CompMap = map[string]string{
-		SixNations:              SixNationsId,
-		RugbyWorldCup:           RugbyWorldCupId,
-		Premiership:             PremiershipId,
-		Top14:                   Top14Id,
-		UnitedRugbyChampionship: UnitedRugbyChampionshipId,
-		RugbyChampionship:       RugbyChampionshipId,
-	}
-)
 
 const (
 	SixNations   = "Six Nations"

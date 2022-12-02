@@ -23,7 +23,7 @@ type Mapper struct{}
 func (m Mapper) LeaderboardByIdQuery(teamId string) string {
 	teamIdInt, err := strconv.Atoi(teamId)
 	if err != nil {
-		log.Error(err)
+		log.Errorf("error converting string: '%s' for leaderboard query; %v", teamId, err)
 		return ""
 	}
 	return fmt.Sprintf(LeaderboardByIdQuery, teamIdInt)
