@@ -1,5 +1,7 @@
 # rugby-data-api
 
+[![codecov](https://codecov.io/gh/CalebTracey/rugby-data-api/branch/main/graph/badge.svg?token=7149IITZ81)](https://codecov.io/gh/CalebTracey/rugby-data-api)
+
 ### [Swagger Docs](https://calebtracey.github.io/rugby-data-api/swagger-ui/)
 
 [rugby-models](https://github.com/CalebTracey/rugby-models) used for common data types
