@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"github.com/calebtracey/rugby-data-api/internal/facade"
 	_ "github.com/calebtracey/rugby-data-api/internal/routes/statik"
-	lbReq "github.com/calebtracey/rugby-models/pkg/dtos/request/leaderboard"
+	"github.com/calebtracey/rugby-models/pkg/dtos/leaderboard"
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
-	lbRes "github.com/calebtracey/rugby-models/pkg/dtos/response/leaderboard"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/sirupsen/logrus"
@@ -40,13 +39,12 @@ func (h *Handler) InitializeRoutes() *mux.Router {
 func (h *Handler) LeaderboardHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		startTime := time.Now()
-		var leaderboardRequest lbReq.Request
-		var leaderboardResponse lbRes.Response
+		var leaderboardRequest leaderboard.Request
+		var leaderboardResponse leaderboard.Response
 		if err := leaderboardRequest.FromJSON(r.Body); err != nil {
 			leaderboardResponse.Message.ErrorLog = response.ErrorLogs{*err}
 		}
 		leaderboardResponse = h.Service.GetLeaderboardData(r.Context(), leaderboardRequest)
-
 		if err := leaderboardResponse.ToJSON(w); err != nil {
 			logrus.Errorf("failed to marshal response: %s", err.RootCause)
 			leaderboardResponse.Message.ErrorLog = response.ErrorLogs{*err}

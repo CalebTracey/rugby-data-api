@@ -46,6 +46,7 @@ func mapError(err error, query string) (errLog *response.ErrorLog) {
 		errLog.StatusCode = "404"
 		return errLog
 	}
+
 	if err != nil {
 		errLog.RootCause = err.Error()
 	}

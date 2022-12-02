@@ -8,8 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	leaderboard "github.com/calebtracey/rugby-models/pkg/dtos/request/leaderboard"
-	leaderboard0 "github.com/calebtracey/rugby-models/pkg/dtos/response/leaderboard"
+	leaderboard "github.com/calebtracey/rugby-models/pkg/dtos/leaderboard"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -37,10 +36,10 @@ func (m *MockFacadeI) EXPECT() *MockFacadeIMockRecorder {
 }
 
 // AllLeaderboardData mocks base method.
-func (m *MockFacadeI) AllLeaderboardData(arg0 context.Context) leaderboard0.Response {
+func (m *MockFacadeI) AllLeaderboardData(arg0 context.Context) leaderboard.Response {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AllLeaderboardData", arg0)
-	ret0, _ := ret[0].(leaderboard0.Response)
+	ret0, _ := ret[0].(leaderboard.Response)
 	return ret0
 }
 
@@ -51,10 +50,10 @@ func (mr *MockFacadeIMockRecorder) AllLeaderboardData(arg0 interface{}) *gomock.
 }
 
 // LeaderboardData mocks base method.
-func (m *MockFacadeI) LeaderboardData(arg0 context.Context, arg1 leaderboard.Request) leaderboard0.Response {
+func (m *MockFacadeI) LeaderboardData(arg0 context.Context, arg1 leaderboard.Request) leaderboard.Response {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "LeaderboardData", arg0, arg1)
-	ret0, _ := ret[0].(leaderboard0.Response)
+	ret0, _ := ret[0].(leaderboard.Response)
 	return ret0
 }
 

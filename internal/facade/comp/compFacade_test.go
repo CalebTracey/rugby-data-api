@@ -7,8 +7,7 @@ import (
 	"github.com/calebtracey/rugby-data-api/internal/mocks/compmocks"
 	"github.com/calebtracey/rugby-data-api/internal/mocks/dbmocks"
 	"github.com/calebtracey/rugby-models/pkg/dtos"
-	lbReq "github.com/calebtracey/rugby-models/pkg/dtos/request/leaderboard"
-	lbRes "github.com/calebtracey/rugby-models/pkg/dtos/response/leaderboard"
+	"github.com/calebtracey/rugby-models/pkg/dtos/leaderboard"
 
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
 	"github.com/calebtracey/rugby-models/pkg/models"
@@ -28,14 +27,14 @@ func TestFacade_LeaderboardData(t *testing.T) {
 	}
 	type args struct {
 		ctx context.Context
-		req lbReq.Request
+		req leaderboard.Request
 	}
 	tests := []struct {
 		name          string
 		fields        fields
 		args          args
 		query         string
-		wantResp      lbRes.Response
+		wantResp      leaderboard.Response
 		wantMockResp  dtos.CompetitionLeaderboardData
 		mockDaoResp   models.PSQLLeaderboardDataList
 		wantCompId    string
@@ -49,8 +48,8 @@ func TestFacade_LeaderboardData(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: lbReq.Request{
-					Competitions: dtos.CompetitionList{
+				req: leaderboard.Request{
+					competitions: dtos.CompetitionList{
 						{
 							Name: "six nations",
 						},

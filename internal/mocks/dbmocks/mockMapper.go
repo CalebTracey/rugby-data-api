@@ -9,8 +9,8 @@ import (
 	reflect "reflect"
 
 	dtos "github.com/calebtracey/rugby-models/pkg/dtos"
+	leaderboard "github.com/calebtracey/rugby-models/pkg/dtos/leaderboard"
 	response "github.com/calebtracey/rugby-models/pkg/dtos/response"
-	leaderboard "github.com/calebtracey/rugby-models/pkg/dtos/response/leaderboard"
 	models "github.com/calebtracey/rugby-models/pkg/models"
 	gomock "github.com/golang/mock/gomock"
 )
