@@ -8,7 +8,6 @@ import (
 	context "context"
 	reflect "reflect"
 
-	response "github.com/calebtracey/rugby-models/pkg/dtos/response"
 	models "github.com/calebtracey/rugby-models/pkg/models"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -36,32 +35,32 @@ func (m *MockDAOI) EXPECT() *MockDAOIMockRecorder {
 	return m.recorder
 }
 
-// GetAllLeaderboardData mocks base method.
-func (m *MockDAOI) GetAllLeaderboardData(arg0 context.Context) (models.PSQLLeaderboardDataList, *response.ErrorLog) {
+// AllLeaderboardData mocks base method.
+func (m *MockDAOI) AllLeaderboardData(arg0 context.Context) (models.PSQLLeaderboardDataList, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllLeaderboardData", arg0)
+	ret := m.ctrl.Call(m, "AllLeaderboardData", arg0)
 	ret0, _ := ret[0].(models.PSQLLeaderboardDataList)
-	ret1, _ := ret[1].(*response.ErrorLog)
+	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetAllLeaderboardData indicates an expected call of GetAllLeaderboardData.
-func (mr *MockDAOIMockRecorder) GetAllLeaderboardData(arg0 interface{}) *gomock.Call {
+// AllLeaderboardData indicates an expected call of AllLeaderboardData.
+func (mr *MockDAOIMockRecorder) AllLeaderboardData(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllLeaderboardData", reflect.TypeOf((*MockDAOI)(nil).GetAllLeaderboardData), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AllLeaderboardData", reflect.TypeOf((*MockDAOI)(nil).AllLeaderboardData), arg0)
 }
 
-// GetLeaderboardData mocks base method.
-func (m *MockDAOI) GetLeaderboardData(arg0 context.Context, arg1 string) (models.PSQLLeaderboardDataList, *response.ErrorLog) {
+// LeaderboardData mocks base method.
+func (m *MockDAOI) LeaderboardData(arg0 context.Context, arg1 string) (models.PSQLLeaderboardDataList, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetLeaderboardData", arg0, arg1)
+	ret := m.ctrl.Call(m, "LeaderboardData", arg0, arg1)
 	ret0, _ := ret[0].(models.PSQLLeaderboardDataList)
-	ret1, _ := ret[1].(*response.ErrorLog)
+	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetLeaderboardData indicates an expected call of GetLeaderboardData.
-func (mr *MockDAOIMockRecorder) GetLeaderboardData(arg0, arg1 interface{}) *gomock.Call {
+// LeaderboardData indicates an expected call of LeaderboardData.
+func (mr *MockDAOIMockRecorder) LeaderboardData(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLeaderboardData", reflect.TypeOf((*MockDAOI)(nil).GetLeaderboardData), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LeaderboardData", reflect.TypeOf((*MockDAOI)(nil).LeaderboardData), arg0, arg1)
 }

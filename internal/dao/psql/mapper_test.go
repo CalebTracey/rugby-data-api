@@ -26,8 +26,8 @@ func TestMapper_CreatePSQLCompetitionQuery(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := Mapper{}
-			if got := m.CreatePSQLLeaderboardByIdQuery(tt.teamId); got != tt.want {
-				t.Errorf("CreatePSQLLeaderboardByIdQuery() = %v, want %v", got, tt.want)
+			if got := m.LeaderboardByIdQuery(tt.teamId); got != tt.want {
+				t.Errorf("LeaderboardByIdQuery() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -128,12 +128,12 @@ func TestMapper_MapPSQLRowsToLeaderboardData(t *testing.T) {
 			if err != nil {
 				log.Error(err)
 			}
-			gotLeaderboardData, gotErrorLog := m.MapPSQLRowsToLeaderboardData(rows)
+			gotLeaderboardData, gotErrorLog := m.RowsToLeaderboardData(rows)
 			if !reflect.DeepEqual(gotLeaderboardData, tt.wantLeaderboardData) {
-				t.Errorf("MapPSQLRowsToLeaderboardData() gotLeaderboardData = %v, want %v", gotLeaderboardData, tt.wantLeaderboardData)
+				t.Errorf("RowsToLeaderboardData() gotLeaderboardData = %v, want %v", gotLeaderboardData, tt.wantLeaderboardData)
 			}
 			if !reflect.DeepEqual(gotErrorLog, tt.wantErrorLog) {
-				t.Errorf("MapPSQLRowsToLeaderboardData() gotErrorLog = %v, want %v", gotErrorLog, tt.wantErrorLog)
+				t.Errorf("RowsToLeaderboardData() gotErrorLog = %v, want %v", gotErrorLog, tt.wantErrorLog)
 			}
 		})
 	}

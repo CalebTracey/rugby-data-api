@@ -9,7 +9,6 @@ import (
 	sql "database/sql"
 	reflect "reflect"
 
-	response "github.com/calebtracey/rugby-models/pkg/dtos/response"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -37,11 +36,11 @@ func (m *MockDAOI) EXPECT() *MockDAOIMockRecorder {
 }
 
 // FindAll mocks base method.
-func (m *MockDAOI) FindAll(arg0 context.Context, arg1 string) (*sql.Rows, *response.ErrorLog) {
+func (m *MockDAOI) FindAll(arg0 context.Context, arg1 string) (*sql.Rows, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindAll", arg0, arg1)
 	ret0, _ := ret[0].(*sql.Rows)
-	ret1, _ := ret[1].(*response.ErrorLog)
+	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
@@ -52,11 +51,11 @@ func (mr *MockDAOIMockRecorder) FindAll(arg0, arg1 interface{}) *gomock.Call {
 }
 
 // InsertOne mocks base method.
-func (m *MockDAOI) InsertOne(arg0 context.Context, arg1 string) (sql.Result, *response.ErrorLog) {
+func (m *MockDAOI) InsertOne(arg0 context.Context, arg1 string) (sql.Result, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "InsertOne", arg0, arg1)
 	ret0, _ := ret[0].(sql.Result)
-	ret1, _ := ret[1].(*response.ErrorLog)
+	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 

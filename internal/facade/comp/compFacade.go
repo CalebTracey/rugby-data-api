@@ -2,12 +2,15 @@ package comp
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"github.com/calebtracey/rugby-data-api/internal/dao/comp"
 	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
 	"github.com/calebtracey/rugby-models/pkg/dtos"
 	"github.com/calebtracey/rugby-models/pkg/dtos/leaderboard"
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -24,47 +27,66 @@ type Facade struct {
 }
 
 func (s Facade) LeaderboardData(ctx context.Context, req leaderboard.Request) (resp leaderboard.Response) {
-	var data dtos.CompetitionLeaderboardDataList
-	//TODO make this concurrent
-	for _, competition := range req.GetCompetitions() {
-		compName, compId := getCompId(competition.GetName())
-		teamsQuery := s.DbMapper.CreatePSQLLeaderboardByIdQuery(compId)
-		leaderboardData, err := s.CompDAO.GetLeaderboardData(ctx, teamsQuery)
-		if err != nil {
-			log.Error(err)
-			return leaderboard.Response{
-				Message: response.Message{
-					ErrorLog: response.ErrorLogs{
-						*err,
-					},
-				},
+	g, ctx := errgroup.WithContext(ctx)
+	results := make([]dtos.CompetitionLeaderboardData, len(req.Competitions))
+
+	for i, competition := range req.Competitions {
+		i, competition := i, competition
+
+		compName, compId := compId(competition.Name)
+		teamsQuery := s.DbMapper.LeaderboardByIdQuery(compId)
+
+		g.Go(func() error {
+			leaderboardData, err := s.CompDAO.LeaderboardData(ctx, teamsQuery)
+			if err == nil {
+				compData := s.DbMapper.LeaderboardDataToResponse(compName, compId, leaderboardData)
+				results[i] = compData
 			}
-		}
-		compData := s.DbMapper.MapPSQLLeaderboardDataToResponse(compName, compId, leaderboardData)
-		data = append(data, compData)
+			return err
+		})
+
 	}
-	resp.LeaderboardData = data
+	if err := g.Wait(); err != nil {
+		resp.Message.ErrorLog = response.ErrorLogs{
+			*mapError(err, fmt.Sprintf("%s", req)),
+		}
+	}
+	resp.LeaderboardData = results
+
 	return resp
 }
 
 func (s Facade) AllLeaderboardData(ctx context.Context) (resp leaderboard.Response) {
-	leaderboardData, err := s.CompDAO.GetAllLeaderboardData(ctx)
+	leaderboardData, err := s.CompDAO.AllLeaderboardData(ctx)
 	if err != nil {
-		log.Error(err)
-		return leaderboard.Response{
-			Message: response.Message{
-				ErrorLog: response.ErrorLogs{
-					*err,
-				},
-			},
+		resp.Message.ErrorLog = response.ErrorLogs{
+			*mapError(err, fmt.Sprintf("%s", "all leaderboard request")),
 		}
 	}
-	resp = s.DbMapper.MapPSQLAllLeaderboardDataToResponse(leaderboardData)
+	resp = s.DbMapper.AllLeaderboardDataToResponse(leaderboardData)
 
 	return resp
 }
 
-func getCompId(compName string) (string, string) {
+func mapError(err error, query string) (errLog *response.ErrorLog) {
+	log.Error(err)
+	errLog = &response.ErrorLog{
+		Query: query,
+	}
+	if err == sql.ErrNoRows {
+		errLog.RootCause = "Not found in database"
+		errLog.StatusCode = "404"
+		return errLog
+	}
+
+	if err != nil {
+		errLog.RootCause = err.Error()
+	}
+	errLog.StatusCode = "500"
+	return errLog
+}
+
+func compId(compName string) (string, string) {
 	c := cases.Title(language.English)
 	switch c.String(compName) {
 	case SixNations:

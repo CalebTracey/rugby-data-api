@@ -117,7 +117,7 @@ func (c *Client) GetLeaderboardData(ctx context.Context, body GetLeaderboardData
 	return c.Client.Do(req)
 }
 
-// NewGetLeaderboardDataRequest calls the generic GetLeaderboardData builder with application/json body
+// NewGetLeaderboardDataRequest calls the generic LeaderboardData builder with application/json body
 func NewGetLeaderboardDataRequest(server string, body GetLeaderboardDataJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
@@ -128,7 +128,7 @@ func NewGetLeaderboardDataRequest(server string, body GetLeaderboardDataJSONRequ
 	return NewGetLeaderboardDataRequestWithBody(server, "application/json", bodyReader)
 }
 
-// NewGetLeaderboardDataRequestWithBody generates requests for GetLeaderboardData with any type of body
+// NewGetLeaderboardDataRequestWithBody generates requests for LeaderboardData with any type of body
 func NewGetLeaderboardDataRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
@@ -200,7 +200,7 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
-	// GetLeaderboardData request with any body
+	// LeaderboardData request with any body
 	GetLeaderboardDataWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*GetLeaderboardDataResponse, error)
 
 	GetLeaderboardDataWithResponse(ctx context.Context, body GetLeaderboardDataJSONRequestBody, reqEditors ...RequestEditorFn) (*GetLeaderboardDataResponse, error)

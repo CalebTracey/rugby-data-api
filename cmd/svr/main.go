@@ -19,7 +19,6 @@ func main() {
 	appConfig := config.NewFromFile(configPath)
 	facade, err := initializeDAO(*appConfig)
 	if err != nil {
-		log.Error(err)
 		panicQuit()
 	}
 	handler := routes.Handler{Service: facade}

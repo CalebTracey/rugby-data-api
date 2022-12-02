@@ -63,7 +63,7 @@ type LeaderboardRequest struct {
 	Source   *string `json:"source,omitempty"`
 }
 
-// GetLeaderboardDataJSONBody defines parameters for GetLeaderboardData.
+// GetLeaderboardDataJSONBody defines parameters for LeaderboardData.
 type GetLeaderboardDataJSONBody struct {
 	CompId   *string `json:"compId,omitempty"`
 	CompName *string `json:"compName,omitempty"`
@@ -71,5 +71,5 @@ type GetLeaderboardDataJSONBody struct {
 	Source   *string `json:"source,omitempty"`
 }
 
-// GetLeaderboardDataJSONRequestBody defines body for GetLeaderboardData for application/json ContentType.
+// GetLeaderboardDataJSONRequestBody defines body for LeaderboardData for application/json ContentType.
 type GetLeaderboardDataJSONRequestBody GetLeaderboardDataJSONBody

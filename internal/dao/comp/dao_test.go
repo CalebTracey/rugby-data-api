@@ -109,12 +109,12 @@ func TestDAO_GetLeaderboardData(t *testing.T) {
 			if !tt.expectDbError {
 				mockMapper.EXPECT().MapPSQLRowsToLeaderboardData(gomock.Any()).Return(tt.wantRes, tt.wantMapErr)
 			}
-			gotCompResponse, gotErr := s.GetLeaderboardData(tt.args.ctx, tt.args.query)
+			gotCompResponse, gotErr := s.LeaderboardData(tt.args.ctx, tt.args.query)
 			if !reflect.DeepEqual(gotCompResponse, tt.wantRes) {
-				t.Errorf("GetLeaderboardData() gotCompResponse = %v, want %v", gotCompResponse, tt.wantRes)
+				t.Errorf("LeaderboardData() gotCompResponse = %v, want %v", gotCompResponse, tt.wantRes)
 			}
 			if !reflect.DeepEqual(gotErr, tt.wantErr) {
-				t.Errorf("GetLeaderboardData() gotErr = %v, want %v", gotErr, tt.wantErr)
+				t.Errorf("LeaderboardData() gotErr = %v, want %v", gotErr, tt.wantErr)
 			}
 		})
 	}
