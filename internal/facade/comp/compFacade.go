@@ -61,7 +61,7 @@ func (s Facade) AllLeaderboardData(ctx context.Context) (resp leaderboard.Respon
 	leaderboardData, err := s.CompDAO.AllLeaderboardData(ctx)
 	if err != nil {
 		resp.Message.ErrorLog = response.ErrorLogs{
-			*mapError(err, fmt.Sprintf("%s", "all leaderboard request")),
+			*mapError(err, "all leaderboard request"),
 		}
 		return resp
 	}
