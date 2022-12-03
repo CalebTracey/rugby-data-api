@@ -1,25 +1,18 @@
-Env: "dev"
-Port: "6080"
+Env: "Dev"
+Port: 6080
 AppName: "rugby-data-api"
-ClientConfig:
-  Timeout: 15
-  IdleConnTimeout: 30
-  MaxIdleConsPerHost: 1
-  MaxConsPerHost: 1
-DatabaseConfigs:
+ComponentConfigs:
+  Client:
+    Timeout: 15
+    IdleConnTimeout: 15
+    MaxIdleConsPerHost: 50
+    MaxConsPerHost: 0
+    DisableCompression: 2
+    InsecureSkipVerify: 1
+Databases:
   - Name: "PSQL"
     Database: "postgres"
     Server: "db.qcgjaptyxgcmagtvntln.supabase.co:5432"
     Username: "postgres"
     Scheme: "postgres"
     PasswordEnvVariable: "DB_PASSWORD_DEV"
-CrawlerConfigs:
-  - Name: "COLLY"
-    AppsJSONPath: ""
-    TimeoutSeconds: "3"
-    LoadingTimeoutSeconds: "3"
-    JSON: "true"
-    MaxDepth: "0"
-    visitedLinks: "0"
-    MaxVisitedLinks: "100"
-    MsDelayBetweenRequests: "10"

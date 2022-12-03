@@ -20,9 +20,9 @@ type Handler struct {
 func (h *Handler) InitializeRoutes() *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 
-	r.Handle("/health", h.HealthCheck()).Methods(http.MethodGet)
-	r.Handle("/leaderboard", h.LeaderboardHandler()).Methods(http.MethodPost)
-	r.Handle("/leaderboards", h.AllLeaderboardsHandler()).Methods(http.MethodGet)
+	r.HandleFunc("/health", h.HealthCheck).Methods(http.MethodGet)
+	r.HandleFunc("/leaderboard", h.LeaderboardHandler).Methods(http.MethodPost)
+	r.HandleFunc("/leaderboards", h.AllLeaderboardsHandler).Methods(http.MethodGet)
 
 	staticFs, err := fs.New()
 	if err != nil {
@@ -36,44 +36,41 @@ func (h *Handler) InitializeRoutes() *mux.Router {
 	return r
 }
 
-func (h *Handler) LeaderboardHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		startTime := time.Now()
-		apiRequest := leaderboard.RequestFromJSON(r.Body)
-		apiResponse := h.Service.GetLeaderboardData(r.Context(), apiRequest)
+func (h *Handler) LeaderboardHandler(w http.ResponseWriter, r *http.Request) {
+	startTime := time.Now()
+	apiRequest := leaderboard.RequestFromJSON(r.Body)
+	apiResponse := h.Service.GetLeaderboardData(r.Context(), apiRequest)
 
-		if err := apiResponse.ResponseToJSON(w); err != nil {
-			log.Errorf("failed to marshal response: %s", err.RootCause)
-			apiResponse.Message.ErrorLog = response.ErrorLogs{*err}
-		}
-		statusCode := apiResponse.Message.ErrorLog.GetHTTPStatus(len(apiResponse.LeaderboardData))
-		apiResponse.Message.AddMessageDetails(startTime)
-
-		response.WriteHeader(w, statusCode)
+	if err := apiResponse.ResponseToJSON(w); err != nil {
+		log.Errorf("failed to marshal response: %s", err.RootCause)
+		apiResponse.Message.ErrorLog = response.ErrorLogs{*err}
 	}
+	statusCode := apiResponse.Message.ErrorLog.GetHTTPStatus(len(apiResponse.LeaderboardData))
+	apiResponse.Message.AddMessageDetails(startTime)
+
+	response.WriteHeader(w, statusCode)
 }
 
-func (h *Handler) AllLeaderboardsHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		startTime := time.Now()
-		apiResponse := h.Service.GetAllLeaderboardData(r.Context())
+func (h *Handler) AllLeaderboardsHandler(w http.ResponseWriter, r *http.Request) {
+	startTime := time.Now()
+	apiResponse := h.Service.GetAllLeaderboardData(r.Context())
 
-		if err := apiResponse.ResponseToJSON(w); err != nil {
-			log.Errorf("failed to marshal response: %s", err.RootCause)
-			apiResponse.Message.ErrorLog = response.ErrorLogs{*err}
-		}
-		statusCode := apiResponse.Message.ErrorLog.GetHTTPStatus(len(apiResponse.LeaderboardData))
-		apiResponse.Message.AddMessageDetails(startTime)
-
-		response.WriteHeader(w, statusCode)
+	if err := apiResponse.ResponseToJSON(w); err != nil {
+		log.Errorf("failed to marshal response: %s", err.RootCause)
+		apiResponse.Message.ErrorLog = response.ErrorLogs{*err}
 	}
+	statusCode := apiResponse.Message.ErrorLog.GetHTTPStatus(len(apiResponse.LeaderboardData))
+	apiResponse.Message.AddMessageDetails(startTime)
+
+	response.WriteHeader(w, statusCode)
+
 }
 
-func (h *Handler) HealthCheck() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewEncoder(w).Encode(map[string]bool{"ok": true}); err != nil {
-			log.Errorln(err.Error())
-			return
-		}
+func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
+	defer r.Context().Done()
+	if err := json.NewEncoder(w).Encode(map[string]bool{"ok": true}); err != nil {
+		log.Errorln(err.Error())
+		response.WriteHeader(w, 503)
+		return
 	}
 }

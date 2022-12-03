@@ -22,10 +22,12 @@ func (s DAO) LeaderboardData(ctx context.Context, query string) (resp models.PSQ
 	if err != nil {
 		return resp, err
 	}
+
 	resp, err = s.DbMapper.RowsToLeaderboardData(rows)
 	if err != nil {
 		return resp, err
 	}
+
 	return resp, nil
 }
 
@@ -34,9 +36,11 @@ func (s DAO) AllLeaderboardData(ctx context.Context) (resp models.PSQLLeaderboar
 	if err != nil {
 		return resp, err
 	}
+
 	resp, err = s.DbMapper.RowsToLeaderboardData(rows)
 	if err != nil {
 		return resp, err
 	}
+
 	return resp, nil
 }

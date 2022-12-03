@@ -17,12 +17,15 @@ const Port = "6080"
 func main() {
 	defer panicQuit()
 	appConfig := config.NewFromFile(configPath)
+
 	facade, err := initializeDAO(*appConfig)
 	if err != nil {
 		panicQuit()
 	}
+
 	handler := routes.Handler{Service: facade}
 	router := handler.InitializeRoutes()
+
 	routes.RegisterOpenAPI(router)
 	c := corsHandler()
 

@@ -10,7 +10,8 @@ import (
 )
 
 func initializeDAO(config config.Config) (facade.APIFacadeI, error) {
-	psqlDbConfig, err := config.GetDatabaseConfig("PSQL")
+	psqlConfig, err := config.Database("PSQL")
+
 	if err != nil {
 		log.Error(err)
 		return nil, err
@@ -20,7 +21,7 @@ func initializeDAO(config config.Config) (facade.APIFacadeI, error) {
 		CompService: c.Facade{
 			CompDAO: comp.DAO{
 				DbDAO: psql.DAO{
-					DB: psqlDbConfig.DB,
+					DB: psqlConfig.DB,
 				},
 				DbMapper: psql.Mapper{},
 			},
