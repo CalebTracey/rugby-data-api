@@ -6,7 +6,6 @@ import (
 	"github.com/calebtracey/rugby-models/pkg/dtos"
 	"github.com/calebtracey/rugby-models/pkg/dtos/leaderboard"
 	"github.com/calebtracey/rugby-models/pkg/models"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 )
 
@@ -21,11 +20,8 @@ type MapperI interface {
 type Mapper struct{}
 
 func (m Mapper) LeaderboardByIdQuery(teamId string) string {
-	teamIdInt, err := strconv.Atoi(teamId)
-	if err != nil {
-		log.Errorf("error converting string: '%s' for leaderboard query; %v", teamId, err)
-		return ""
-	}
+	teamIdInt, _ := strconv.Atoi(teamId)
+
 	return fmt.Sprintf(LeaderboardByIdQuery, teamIdInt)
 }
 
@@ -118,7 +114,7 @@ func (m Mapper) AllLeaderboardDataToResponse(leaderboardDataList models.PSQLLead
 const (
 	CompetitionCount = 6
 
-	CompetitionByID = `with comp_teams as (
+	CompetitionByIdQuery = `with comp_teams as (
 		select
 			c.comp_id,
 			c.name as comp_name,
