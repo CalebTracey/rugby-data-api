@@ -4,6 +4,7 @@ import (
 	"github.com/NYTimes/gziphandler"
 	config "github.com/calebtracey/config-yaml"
 	"github.com/calebtracey/rugby-data-api/internal/routes"
+	"github.com/calebtracey/rugby-data-api/internal/routes/openapi"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -16,17 +17,19 @@ const Port = "6080"
 //go:generate swagger spec --output=../../openapi.yaml
 func main() {
 	defer panicQuit()
-	appConfig := config.NewFromFile(configPath)
+
+	appConfig := config.New(configPath)
 	facade, err := initializeDAO(*appConfig)
+
 	if err != nil {
 		panicQuit()
 	}
 	handler := routes.Handler{Service: facade}
 	router := handler.InitializeRoutes()
-	routes.RegisterOpenAPI(router)
-	c := corsHandler()
 
-	log.Fatal(listenAndServe(Port, gziphandler.GzipHandler(c.Handler(router))))
+	openapi.RegisterOpenAPI(router)
+
+	log.Fatal(listenAndServe(Port, gziphandler.GzipHandler(corsHandler().Handler(router))))
 }
 
 func panicQuit() {

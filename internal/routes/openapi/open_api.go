@@ -1,4 +1,4 @@
-package routes
+package openapi
 
 import (
 	"github.com/calebtracey/rugby-models/pkg/dtos/response"
