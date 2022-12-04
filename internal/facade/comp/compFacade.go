@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/calebtracey/rugby-data-api/internal/dao/comp"
+	lb "github.com/calebtracey/rugby-data-api/internal/dao/comp/leaderboard"
 	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
 	"github.com/calebtracey/rugby-models/pkg/dtos"
 	"github.com/calebtracey/rugby-models/pkg/dtos/leaderboard"
@@ -22,7 +22,7 @@ type FacadeI interface {
 }
 
 type Facade struct {
-	CompDAO  comp.DAOI
+	LBDao    lb.DAOI
 	DbMapper psql.MapperI
 }
 
@@ -37,7 +37,7 @@ func (s Facade) LeaderboardData(ctx context.Context, req leaderboard.Request) (r
 		teamsQuery := s.DbMapper.LeaderboardByIdQuery(compId)
 
 		g.Go(func() error {
-			leaderboardData, err := s.CompDAO.LeaderboardData(ctx, teamsQuery)
+			leaderboardData, err := s.LBDao.LeaderboardData(ctx, teamsQuery)
 
 			if err == nil {
 				compData := s.DbMapper.LeaderboardDataToResponse(compName, compId, leaderboardData)
@@ -58,7 +58,7 @@ func (s Facade) LeaderboardData(ctx context.Context, req leaderboard.Request) (r
 }
 
 func (s Facade) AllLeaderboardData(ctx context.Context) (resp leaderboard.Response) {
-	leaderboardData, err := s.CompDAO.AllLeaderboardData(ctx)
+	leaderboardData, err := s.LBDao.AllLeaderboardData(ctx)
 	if err != nil {
 		resp.Message.ErrorLog = response.ErrorLogs{
 			*mapError(err, "all leaderboard request"),

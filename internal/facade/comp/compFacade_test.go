@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/calebtracey/rugby-data-api/internal/dao/comp"
+	lb "github.com/calebtracey/rugby-data-api/internal/dao/comp/leaderboard"
 	"github.com/calebtracey/rugby-data-api/internal/dao/psql"
 	"github.com/calebtracey/rugby-data-api/internal/mocks/compmocks"
 	"github.com/calebtracey/rugby-data-api/internal/mocks/dbmocks"
@@ -24,7 +24,7 @@ func TestFacade_LeaderboardData(t *testing.T) {
 	mockCompDao := compmocks.NewMockDAOI(ctrl)
 	mockCompMapper := dbmocks.NewMockMapperI(ctrl)
 	type fields struct {
-		CompDAO  comp.DAOI
+		CompDAO  lb.DAOI
 		DbMapper psql.MapperI
 	}
 	type args struct {
@@ -155,7 +155,7 @@ func TestFacade_LeaderboardData(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := Facade{
-				CompDAO:  tt.fields.CompDAO,
+				LBDao:    tt.fields.CompDAO,
 				DbMapper: tt.fields.DbMapper,
 			}
 			mockCompMapper.EXPECT().LeaderboardByIdQuery(gomock.Any()).Return(tt.query)
@@ -183,7 +183,7 @@ func TestFacade_AllLeaderboardData(t *testing.T) {
 	mockCompDao := compmocks.NewMockDAOI(ctrl)
 	mockCompMapper := dbmocks.NewMockMapperI(ctrl)
 	type fields struct {
-		CompDAO  comp.DAOI
+		LBDao    lb.DAOI
 		DbMapper psql.MapperI
 	}
 	tests := []struct {
@@ -199,7 +199,7 @@ func TestFacade_AllLeaderboardData(t *testing.T) {
 		{
 			name: "Happy Path",
 			fields: fields{
-				CompDAO:  mockCompDao,
+				LBDao:    mockCompDao,
 				DbMapper: mockCompMapper,
 			},
 			ctx:           context.Background(),
@@ -267,7 +267,7 @@ func TestFacade_AllLeaderboardData(t *testing.T) {
 		{
 			name: "Sad Path",
 			fields: fields{
-				CompDAO:  mockCompDao,
+				LBDao:    mockCompDao,
 				DbMapper: mockCompMapper,
 			},
 			ctx:           context.Background(),
@@ -289,7 +289,7 @@ func TestFacade_AllLeaderboardData(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := Facade{
-				CompDAO:  tt.fields.CompDAO,
+				LBDao:    tt.fields.LBDao,
 				DbMapper: tt.fields.DbMapper,
 			}
 			mockCompDao.EXPECT().AllLeaderboardData(tt.ctx).

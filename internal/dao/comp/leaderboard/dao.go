@@ -1,4 +1,4 @@
-package comp
+package leaderboard
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"github.com/calebtracey/rugby-models/pkg/models"
 )
 
-//go:generate mockgen -destination=../../mocks/compmocks/mockDao.go -package=compmocks . DAOI
+//go:generate mockgen -destination=../../../mocks/compmocks/mockDao.go -package=compmocks . DAOI
 type DAOI interface {
 	LeaderboardData(ctx context.Context, query string) (resp models.PSQLLeaderboardDataList, err error)
 	AllLeaderboardData(ctx context.Context) (resp models.PSQLLeaderboardDataList, err error)

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/calebtracey/rugby-data-api/internal/routes"
+	"github.com/calebtracey/rugby-data-api/internal/routes/openapi"
 	"github.com/ghodss/yaml"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -21,7 +21,7 @@ func main() {
 		log.Fatalln("path is required")
 	}
 
-	swagger := routes.NewOpenAPI3()
+	swagger := openapi.NewOpenAPI3()
 
 	// openapi3.json
 	data, err := json.Marshal(&swagger)
