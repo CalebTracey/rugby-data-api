@@ -12,12 +12,7 @@ import (
 
 func TestDAO_InsertOne(t *testing.T) {
 	db, mock, _ := sqlmock.New()
-	//defer func(db *sql.DB) {
-	//	err := db.Close()
-	//	if err != nil {
-	//		log.Error(err)
-	//	}
-	//}(db)
+
 	tests := []struct {
 		name      string
 		DB        *sql.DB
@@ -60,6 +55,54 @@ func TestDAO_InsertOne(t *testing.T) {
 			_, gotErr := s.InsertOne(tt.ctx, tt.exec)
 			if !reflect.DeepEqual(gotErr, tt.wantErr) {
 				t.Errorf("InsertOne() gotErr = %v, want %v", gotErr, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestDAO_FindAll(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+
+	tests := []struct {
+		name      string
+		ctx       context.Context
+		query     string
+		DB        *sql.DB
+		wantResp  *sqlmock.Rows
+		wantErr   bool
+		mockErr   error
+		expectErr bool
+	}{
+		{
+			name:      "Happy Path",
+			DB:        db,
+			ctx:       context.Background(),
+			query:     ``,
+			wantResp:  sqlmock.NewRows([]string{"test_row"}).AddRow("123"),
+			expectErr: false,
+		},
+		{
+			name:      "Sad Path",
+			DB:        db,
+			ctx:       context.Background(),
+			query:     ``,
+			wantResp:  sqlmock.NewRows([]string{"test_row"}).AddRow("123").RowError(1, errors.New("error")),
+			mockErr:   errors.New("error"),
+			expectErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := DAO{
+				DB: tt.DB,
+			}
+
+			mock.ExpectQuery(tt.query).WillReturnRows(tt.wantResp)
+
+			_, err := s.FindAll(tt.ctx, tt.query)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("FindAll() error = %v, wantErr %v", err, tt.wantErr)
+				return
 			}
 		})
 	}
