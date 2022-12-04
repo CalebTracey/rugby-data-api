@@ -3,6 +3,9 @@ package psql
 import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/calebtracey/rugby-models/pkg/dtos"
+	"github.com/calebtracey/rugby-models/pkg/dtos/leaderboard"
+	"github.com/calebtracey/rugby-models/pkg/dtos/response"
 	"github.com/calebtracey/rugby-models/pkg/models"
 	log "github.com/sirupsen/logrus"
 	"reflect"
@@ -31,16 +34,8 @@ func TestMapper_CreatePSQLCompetitionQuery(t *testing.T) {
 	}
 }
 
-var ()
-
 func TestMapper_MapPSQLRowsToLeaderboardData(t *testing.T) {
 	db, mock, _ := sqlmock.New()
-	//defer func(db *sql.DB) {
-	//	err := db.Close()
-	//	if err != nil {
-	//		log.Error(err)
-	//	}
-	//}(db)
 	mockCols := []string{"comp_id",
 		"comp_name",
 		"team_id",
@@ -67,7 +62,7 @@ func TestMapper_MapPSQLRowsToLeaderboardData(t *testing.T) {
 	tests := []struct {
 		name                string
 		wantLeaderboardData models.PSQLLeaderboardDataList
-		wantErrorLog        error
+		wantErr             error
 	}{
 		{
 			name: "Happy Path",
@@ -115,7 +110,7 @@ func TestMapper_MapPSQLRowsToLeaderboardData(t *testing.T) {
 					Points:            "15",
 				},
 			},
-			wantErrorLog: nil,
+			wantErr: nil,
 		},
 	}
 	for _, tt := range tests {
@@ -130,8 +125,225 @@ func TestMapper_MapPSQLRowsToLeaderboardData(t *testing.T) {
 			if !reflect.DeepEqual(gotLeaderboardData, tt.wantLeaderboardData) {
 				t.Errorf("RowsToLeaderboardData() gotLeaderboardData = %v, want %v", gotLeaderboardData, tt.wantLeaderboardData)
 			}
-			if !reflect.DeepEqual(gotErrorLog, tt.wantErrorLog) {
-				t.Errorf("RowsToLeaderboardData() gotErrorLog = %v, want %v", gotErrorLog, tt.wantErrorLog)
+			if !reflect.DeepEqual(gotErrorLog, tt.wantErr) {
+				t.Errorf("RowsToLeaderboardData() gotErrorLog = %v, want %v", gotErrorLog, tt.wantErr)
+			}
+		})
+	}
+}
+
+func Test_mapPSQLTeamData(t *testing.T) {
+
+	tests := []struct {
+		name string
+		data models.PSQLLeaderboardData
+		want dtos.TeamLeaderboardData
+	}{
+		{
+			name: "Happy Path",
+			data: models.PSQLLeaderboardData{
+				CompId:            123,
+				CompName:          "Comp",
+				TeamId:            321,
+				TeamName:          "Team",
+				TeamAbbr:          "ABBR",
+				GamesPlayed:       "3",
+				WinCount:          "4",
+				DrawCount:         "5",
+				LossCount:         "6",
+				Bye:               "7",
+				PointsFor:         "8",
+				PointsAgainst:     "9",
+				TriesFor:          "10",
+				TriesAgainst:      "11",
+				BonusPointsTry:    "12",
+				BonusPointsLosing: "13",
+				BonusPoints:       "14",
+				PointsDiff:        "15",
+				Points:            "16",
+			},
+			want: dtos.TeamLeaderboardData{
+				Id:   "321",
+				Name: "Team",
+				Abbr: "ABBR",
+				CompetitionStats: dtos.TeamCompetitionStats{
+					GamesPlayed:       "3",
+					WinCount:          "4",
+					DrawCount:         "5",
+					LossCount:         "6",
+					Bye:               "7",
+					PointsFor:         "8",
+					PointsAgainst:     "9",
+					TriesFor:          "10",
+					TriesAgainst:      "11",
+					BonusPointsTry:    "12",
+					BonusPointsLosing: "13",
+					BonusPoints:       "14",
+					PointsDiff:        "15",
+					Points:            "16",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := mapPSQLTeamData(tt.data); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("mapPSQLTeamData() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMapper_LeaderboardDataToResponse(t *testing.T) {
+	type args struct {
+		compId          string
+		compName        string
+		leaderboardData models.PSQLLeaderboardDataList
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wantResp dtos.CompetitionLeaderboardData
+	}{
+		{
+			name: "Happy Path",
+			args: args{
+				compId:   "123",
+				compName: "321",
+				leaderboardData: models.PSQLLeaderboardDataList{
+					{
+						CompId:            123,
+						CompName:          "Comp",
+						TeamId:            321,
+						TeamName:          "Team",
+						TeamAbbr:          "ABBR",
+						GamesPlayed:       "3",
+						WinCount:          "4",
+						DrawCount:         "5",
+						LossCount:         "6",
+						Bye:               "7",
+						PointsFor:         "8",
+						PointsAgainst:     "9",
+						TriesFor:          "10",
+						TriesAgainst:      "11",
+						BonusPointsTry:    "12",
+						BonusPointsLosing: "13",
+						BonusPoints:       "14",
+						PointsDiff:        "15",
+						Points:            "16",
+					},
+				},
+			},
+			wantResp: dtos.CompetitionLeaderboardData{
+				CompId:   "123",
+				CompName: "321",
+				Teams: dtos.TeamLeaderboardDataList{
+					{
+						Id:   "321",
+						Name: "Team",
+						Abbr: "ABBR",
+						CompetitionStats: dtos.TeamCompetitionStats{
+							GamesPlayed:       "3",
+							WinCount:          "4",
+							DrawCount:         "5",
+							LossCount:         "6",
+							Bye:               "7",
+							PointsFor:         "8",
+							PointsAgainst:     "9",
+							TriesFor:          "10",
+							TriesAgainst:      "11",
+							BonusPointsTry:    "12",
+							BonusPointsLosing: "13",
+							BonusPoints:       "14",
+							PointsDiff:        "15",
+							Points:            "16",
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := Mapper{}
+			if gotResp := m.LeaderboardDataToResponse(tt.args.compId, tt.args.compName, tt.args.leaderboardData); !reflect.DeepEqual(gotResp, tt.wantResp) {
+				t.Errorf("LeaderboardDataToResponse() = %v, want %v", gotResp, tt.wantResp)
+			}
+		})
+	}
+}
+
+func TestMapper_AllLeaderboardDataToResponse(t *testing.T) {
+
+	tests := []struct {
+		name                string
+		leaderboardDataList models.PSQLLeaderboardDataList
+		wantResp            leaderboard.Response
+	}{
+		{
+			name: "Happy Path",
+			leaderboardDataList: models.PSQLLeaderboardDataList{
+				{
+					CompId:            123,
+					CompName:          "Comp",
+					TeamId:            321,
+					TeamName:          "Team",
+					TeamAbbr:          "ABBR",
+					GamesPlayed:       "3",
+					WinCount:          "4",
+					DrawCount:         "5",
+					LossCount:         "6",
+					Bye:               "7",
+					PointsFor:         "8",
+					PointsAgainst:     "9",
+					TriesFor:          "10",
+					TriesAgainst:      "11",
+					BonusPointsTry:    "12",
+					BonusPointsLosing: "13",
+					BonusPoints:       "14",
+					PointsDiff:        "15",
+					Points:            "16",
+				},
+			},
+			wantResp: leaderboard.Response{
+				LeaderboardData: dtos.CompetitionLeaderboardDataList{
+					{
+						CompId:   "123",
+						CompName: "Comp",
+						Teams: dtos.TeamLeaderboardDataList{
+							{
+								Id:   "321",
+								Name: "Team",
+								Abbr: "ABBR",
+								CompetitionStats: dtos.TeamCompetitionStats{
+									GamesPlayed:       "3",
+									WinCount:          "4",
+									DrawCount:         "5",
+									LossCount:         "6",
+									Bye:               "7",
+									PointsFor:         "8",
+									PointsAgainst:     "9",
+									TriesFor:          "10",
+									TriesAgainst:      "11",
+									BonusPointsTry:    "12",
+									BonusPointsLosing: "13",
+									BonusPoints:       "14",
+									PointsDiff:        "15",
+									Points:            "16",
+								},
+							},
+						},
+					},
+				},
+				Message: response.Message{},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := Mapper{}
+			if gotResp := m.AllLeaderboardDataToResponse(tt.leaderboardDataList); !reflect.DeepEqual(gotResp, tt.wantResp) {
+				t.Errorf("AllLeaderboardDataToResponse() = %v, want %v", gotResp, tt.wantResp)
 			}
 		})
 	}

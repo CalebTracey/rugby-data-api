@@ -48,7 +48,7 @@ func TestDAO_GetLeaderboardData(t *testing.T) {
 			},
 			args: args{
 				ctx:   context.Background(),
-				query: fmt.Sprintf(psql.CompetitionByID, "123"),
+				query: fmt.Sprintf(psql.CompetitionByIdQuery, "123"),
 			},
 			mockRows: mockRows,
 			wantRes: models.PSQLLeaderboardDataList{
